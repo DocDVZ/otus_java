@@ -23,7 +23,6 @@
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <java.home>C:\Program Files\Java\jdk1.8.0_40</java.home>
     </properties>
 
     <build>
