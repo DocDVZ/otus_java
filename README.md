@@ -1,3 +1,8 @@
-# otus_java
+# Rурс "Разработчик Java" Otus.ru
 
-Звягин Дмитрий (Zvyagin Dmitry)
+Группа 2017-04.1
+Автор
+
+Dmitry Zvyagin (Дмитрий Звягин)
+
+docdvz@gmail.com
