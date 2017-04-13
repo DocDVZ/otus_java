@@ -35,19 +35,7 @@ public class Main {
         for (int i = 0; i < size; i++){
             arr[i] = new Object();
         }
-        long heapAfterCreate = getHeapSize();
-        System.out.println("Approx. size of " + size + " java.lang.Object after create measure is " + ((heapAfterCreate - heapInit)) + " bytes");
-        double itemSize =  (double) (heapAfterCreate - heapInit)/size;
-        System.out.println("Approx. size of java.lang.Object is " + itemSize + " bytes");
-        for (int i = 0; i < size; i++){
-            arr[i] = null;
-        }
-        System.gc();
-        long heapAfterGC = getHeapSize();
-        System.out.println("Approx. size of " + size + " java.lang.Object after gc measure is " + ((heapAfterCreate - heapAfterGC)) + " bytes");
-        itemSize =  (double) (heapAfterCreate - heapAfterGC)/size;
-        System.out.println("Approx. size of java.lang.Object is " + itemSize + " bytes");
-        System.out.println("HeapSize change " + (getHeapSize() - heapInit) + "bytes");
+        measure(arr, heapInit, "java.lang.Object");
     }
 
 
@@ -60,19 +48,7 @@ public class Main {
 //          Result is 24
 //            arr[i] = new String(new char[]{});
         }
-        long heapAfterCreate = getHeapSize();
-        System.out.println("Approx. size of " + size + " java.lang.String after create measure is " + ((heapAfterCreate - heapInit)) + " bytes");
-        double itemSize =  (double) (heapAfterCreate - heapInit)/size;
-        System.out.println("Approx. size of java.lang.String is " + itemSize + " bytes");
-        for (int i = 0; i < size; i++){
-            arr[i] = null;
-        }
-        System.gc();
-        long heapAfterGC = getHeapSize();
-        System.out.println("Approx. size of " + size + " java.lang.String after gc measure is " + ((heapAfterCreate - heapAfterGC)) + " bytes");
-        itemSize =  (double) (heapAfterCreate - heapAfterGC)/size;
-        System.out.println("Approx. size of java.lang.String is " + itemSize + " bytes");
-        System.out.println("HeapSize change " + (getHeapSize() - heapInit) + "bytes");
+        measure(arr, heapInit, "java.lang.String");
     }
 
     public static void measureArray(Object[] arr){
@@ -80,19 +56,23 @@ public class Main {
         for (int i = 0; i < size; i++){
             arr[i] = new Object[]{};
         }
+        measure(arr, heapInit, "Array");
+    }
+
+    public static void measure(Object[] arr, long heapInit, String name){
         long heapAfterCreate = getHeapSize();
-        System.out.println("Approx. size of " + size + " Array after create measure is " + ((heapAfterCreate - heapInit)) + " bytes");
+        System.out.println("Approx. size of " + size + " " + name + " after create measure is " + ((heapAfterCreate - heapInit)) + " bytes");
         double itemSize =  (double) (heapAfterCreate - heapInit)/size;
-        System.out.println("Approx. size of Array is " + itemSize + " bytes");
+        System.out.println("Approx. size of "+ name +" is " + itemSize + " bytes");
         for (int i = 0; i < size; i++){
             arr[i] = null;
         }
         System.gc();
         long heapAfterGC = getHeapSize();
-        System.out.println("Approx. size of " + size + " Array after gc measure is " + ((heapAfterCreate - heapAfterGC)) + " bytes");
+        System.out.println("Approx. size of " + size + " " + name + " after gc measure is " + ((heapAfterCreate - heapAfterGC)) + " bytes");
         itemSize =  (double) (heapAfterCreate - heapAfterGC)/size;
-        System.out.println("Approx. size of Array is " + itemSize + " bytes");
-        System.out.println("HeapSize change " + (getHeapSize() - heapInit) + "bytes");
+        System.out.println("Approx. size of "+ name +" is " + itemSize + " bytes");
+        System.out.println("HeapSize change " + (getHeapSize() - heapInit) + " bytes");
     }
 
 
