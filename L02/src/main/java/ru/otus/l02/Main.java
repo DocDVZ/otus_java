@@ -46,7 +46,7 @@ public class Main {
 //          No interning, result is 40
             arr[i] = new String(new char[]{});
 //          Result is 24
-//            arr[i] = new String(new char[]{});
+//            arr[i] = new String("");
         }
         measure(arr, heapInit, "java.lang.String");
     }
