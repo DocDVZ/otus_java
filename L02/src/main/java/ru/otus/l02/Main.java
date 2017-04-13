@@ -7,7 +7,6 @@ import java.lang.management.ManagementFactory;
  */
 
 // VM options -Xmx512m -Xms512m
-// java version 1.8.0_121
 public class Main {
 
     public static  int size = 10 * 1024 * 1024;
@@ -52,11 +51,14 @@ public class Main {
     }
 
 
-    // Result always equals to -XX:+UseStringDeduplication result wtf. Is it OOtB?
+
     public static void measureString(Object[] arr){
         long heapInit = getHeapSize();
         for (int i = 0; i < size; i++){
-            arr[i] = new String("");
+//          No interning, result is 40
+            arr[i] = new String(new char[]{});
+//          Result is 24
+//            arr[i] = new String(new char[]{});
         }
         long heapAfterCreate = getHeapSize();
         System.out.println("Approx. size of " + size + " java.lang.String after create measure is " + ((heapAfterCreate - heapInit)) + " bytes");
