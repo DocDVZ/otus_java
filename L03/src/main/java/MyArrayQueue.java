@@ -1,4 +1,5 @@
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Queue;
@@ -36,35 +37,64 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public Object[] toArray() {
-        return new Object[0];
+        return Arrays.copyOfRange(arr, first, last);
     }
 
     public <T> T[] toArray(T[] a) {
-        return null;
+        if (a.length < size())
+            // Make a new array of a's runtime type, but my contents:
+            return (T[]) Arrays.copyOfRange(arr, first, last, a.getClass());
+        for (int i = first; i<last; i++){
+            a[i-first]=(T) arr[i];
+        }
+        if (a.length > size())
+            a[size()] = null;
+        return a;
     }
 
     public boolean add(E e) {
-        return false;
+        checkCapacity();
+        arr[last++] = e;
+
+        return true;
+    }
+
+    private void checkCapacity() {
+        if (last>=arr.length-1){
+            int newSize = arr.length>size()*10 ? 2*arr.length : arr.length;
+            Object[] newArr = new Object[newSize];
+            for (int i = first; i<last; i++){
+                newArr[i-first]=arr[i];
+            }
+            arr = newArr;
+            last = size();
+            first = 0;
+        }
     }
 
     public boolean remove(Object o) {
-        return false;
+        //TODO later
+        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
     }
 
     public boolean containsAll(Collection<?> c) {
-        return false;
+        //TODO later
+        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
     }
 
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        c.forEach(p -> add(p));
+        return true;
     }
 
-    public boolean removeAll(Collection<?> c) {
-        return false;
+    public boolean removeAll(Collection<?> c){
+        //TODO later
+        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
     }
 
     public boolean retainAll(Collection<?> c) {
-        return false;
+        //TODO later
+        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
     }
 
     public void clear() {
@@ -72,22 +102,49 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public boolean offer(E e) {
-        return false;
+        if (last>=arr.length-1){
+            return false;
+        }
+        return add(e);
     }
 
     public E remove() {
-        return null;
+        if (!isEmpty()) {
+            E item = (E) arr[first];
+            arr[first]=null;
+            first++;
+            return item;
+        } else {
+            return null;
+        }
     }
 
     public E poll() {
-        return null;
+        return remove();
     }
 
     public E element() {
-        return null;
+        return (E) arr[last];
     }
 
     public E peek() {
-        return null;
+        return (E) arr[first];
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        if (arr.length==0){return "";}
+        for (Object o : arr){
+            if (o==null){
+                sb.append("null");
+            } else {
+                sb.append(((E) o).toString());
+            }
+            sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
