@@ -1,3 +1,4 @@
+import javax.jws.Oneway;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,8 +92,6 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public boolean remove(Object o) {
-//        TODO later
-//        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
         if (o == null) {
             return false;
         }
@@ -111,8 +110,12 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public boolean containsAll(Collection<?> c) {
-        //TODO later
-        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
+        for (Object o : c){
+            if (!contains(o)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean addAll(Collection<? extends E> c) {
