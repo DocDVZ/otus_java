@@ -1,3 +1,4 @@
+import javax.jws.Oneway;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,8 +11,8 @@ import java.util.Queue;
 public class MyArrayQueue<E> implements Queue<E> {
 
     private Object[] arr;
-    private int first =0 ;
-    private int last =0 ;
+    private int first = 0;
+    private int last = 0;
     private final static int DEAFULT_SIZE = 16;
 
     public MyArrayQueue() {
@@ -33,8 +34,26 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public Iterator<E> iterator() {
-        return null;
+        return new Itr();
     }
+
+
+    private class Itr implements Iterator<E> {
+        int cursor = first;       // index of next element to return
+
+
+        @Override
+        public boolean hasNext() {
+            return cursor != last;
+        }
+
+        @Override
+        public E next() {
+            E item = (E) arr[cursor++];
+            return item;
+        }
+    }
+
 
     public Object[] toArray() {
         return Arrays.copyOfRange(arr, first, last);
@@ -44,8 +63,8 @@ public class MyArrayQueue<E> implements Queue<E> {
         if (a.length < size())
             // Make a new array of a's runtime type, but my contents:
             return (T[]) Arrays.copyOfRange(arr, first, last, a.getClass());
-        for (int i = first; i<last; i++){
-            a[i-first]=(T) arr[i];
+        for (int i = first; i < last; i++) {
+            a[i - first] = (T) arr[i];
         }
         if (a.length > size())
             a[size()] = null;
@@ -60,11 +79,11 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     private void checkCapacity() {
-        if (last>=arr.length-1){
-            int newSize = arr.length>size()*10 ? 2*arr.length : arr.length;
+        if (last >= arr.length - 1) {
+            int newSize = arr.length < (size() * 10) ? (2 * arr.length) : (arr.length);
             Object[] newArr = new Object[newSize];
-            for (int i = first; i<last; i++){
-                newArr[i-first]=arr[i];
+            for (int i = first; i < last; i++) {
+                newArr[i - first] = arr[i];
             }
             arr = newArr;
             last = size();
@@ -73,13 +92,30 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public boolean remove(Object o) {
-        //TODO later
-        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
+        if (o == null) {
+            return false;
+        }
+        ;
+        for (int i = first; i < last; i++) {
+            if (o.equals(arr[i])) {
+                arr[i] = null;
+                for (int k = i; k < last - 1; k++) {
+                    arr[k] = arr[k + 1];
+                }
+                arr[--last] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean containsAll(Collection<?> c) {
-        //TODO later
-        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
+        for (Object o : c){
+            if (!contains(o)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean addAll(Collection<? extends E> c) {
@@ -87,14 +123,23 @@ public class MyArrayQueue<E> implements Queue<E> {
         return true;
     }
 
-    public boolean removeAll(Collection<?> c){
-        //TODO later
-        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
+    public boolean removeAll(Collection<?> c) {
+        c.forEach(p -> remove(p));
+        return true;
     }
 
     public boolean retainAll(Collection<?> c) {
-        //TODO later
-        throw new UnsupportedOperationException("(╯°□°）╯︵ ┻━┻ ");
+        Object[] newArr = new Object[arr.length];
+        int iter = 0;
+        for (Object o : arr){
+            if (c.contains(o)){
+                newArr[iter++] = o;
+            }
+        }
+        arr = newArr;
+        first = 0;
+        last = iter;
+        return true;
     }
 
     public void clear() {
@@ -102,7 +147,7 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     public boolean offer(E e) {
-        if (last>=arr.length-1){
+        if (last >= arr.length - 1) {
             return false;
         }
         return add(e);
@@ -111,7 +156,7 @@ public class MyArrayQueue<E> implements Queue<E> {
     public E remove() {
         if (!isEmpty()) {
             E item = (E) arr[first];
-            arr[first]=null;
+            arr[first] = null;
             first++;
             return item;
         } else {
@@ -132,12 +177,14 @@ public class MyArrayQueue<E> implements Queue<E> {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        if (arr.length==0){return "";}
-        for (Object o : arr){
-            if (o==null){
+        if (arr.length == 0) {
+            return "";
+        }
+        for (Object o : arr) {
+            if (o == null) {
                 sb.append("null");
             } else {
                 sb.append(((E) o).toString());
