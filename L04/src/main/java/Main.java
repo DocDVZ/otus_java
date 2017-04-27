@@ -5,7 +5,7 @@ import java.util.*;
  * Created by dzvyagin on 26.04.2017.
  * -Xmx512m
  * -Xms512m
- *  (version 8u92+)
+ * -XX:+ExitOnOutOfMemoryError (version 8u92+)
  */
 public class Main {
 
@@ -28,7 +28,7 @@ public class Main {
             try {
                 while (true) {
                     gc.printGC();
-                    Thread.sleep(60000);
+                    Thread.sleep(30000);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
