@@ -7,7 +7,8 @@ import java.util.Queue;
 /**
  * Created by dzvyagin on 26.04.2017.
  * -XmX512m
- * =XmS512m
+ * -XmS512m
+ *
  */
 public class Main {
 
@@ -31,7 +32,7 @@ public class Main {
         while (iterator < 100_000_000){
             list.add(new Object());
             if (iterator%10000==0){
-                for (int k=0; k<5000;k++){
+                for (int k=0; k<6000;k++){
                     list.poll();
                 }
                 Thread.sleep(20);
