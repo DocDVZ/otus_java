@@ -1,16 +1,15 @@
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by dzvyagin on 26.04.2017.
- * -XmX512m
- * -XmS512m
- *
+ * -Xmx512m
+ * -Xms512m
+ *  (version 8u92+)
  */
 public class Main {
+
+    static Queue<Object> list = new LinkedList<>();
 
 
     public static void main(String[] args) {
@@ -20,32 +19,37 @@ public class Main {
         try {
             // sleep to start monitoring tool
             Thread.sleep(10000);
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-        Queue<Object> list = new LinkedList<>();
-        GCStatistics gc = new GCStatistics();
+        Thread gcThread = new Thread(() -> {
+            GCStatistics gc = new GCStatistics();
+            Object lock = new Object();
+            try {
+                while (true) {
+                    gc.printGC();
+                    Thread.sleep(60000);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        gcThread.setDaemon(false);
+        gcThread.start();
+        Object lock = new Object();
         long iterator = 0;
         try {
-        while (iterator < 100_000_000){
-            list.add(new Object());
-            if (iterator%10000==0){
-                for (int k=0; k<6000;k++){
-                    list.poll();
+            while (iterator < 100_000_000) {
+                list.add(new Object());
+                if (iterator % 10000 == 0) {
+                    for (int k = 0; k < 8000; k++) {
+                        list.poll();
+                    }
+                    Thread.sleep(30);
                 }
-                Thread.sleep(20);
+                iterator++;
             }
-            if (iterator%500000==0){
-
-                    Thread.sleep(100);
-                    gc.printGC();
-
-            }
-            iterator++;
-        }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
