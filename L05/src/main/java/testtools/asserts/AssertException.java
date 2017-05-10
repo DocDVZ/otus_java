@@ -7,6 +7,6 @@ public class AssertException extends RuntimeException {
 
     public AssertException(){}
 
-    public AssertException(String message){super(message);}
+    public AssertException(String message){super(message, null, true, false);}
 
 }
