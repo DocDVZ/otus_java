@@ -1,8 +1,6 @@
 package ru.otus.L08.testclasses;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by dzvyagin on 01.06.2017.
@@ -34,8 +32,23 @@ public class ClientFactory {
         client.setRegisterAddress(addressFactory.generateAddress());
         client.setFirstName(EntityUtils.getRandomElement(firstNames));
         client.setSecondName(EntityUtils.getRandomElement(lastNames));
-        client.setBithDate(new Date());
+        client.setBirthDate(new Date());
+        client.setPhones(generatePhones());
         return client;
+    }
+
+    private Set<String> generatePhones(){
+        Random random = new Random();
+        Set<String> result = new HashSet<>();
+        Integer num = random.nextInt(5);
+        for (int i = 0; i<num; i++){
+            String phone = "";
+            for (int k = 0; k<10; k++){
+                phone+=random.nextInt(9);
+            }
+            result.add(phone);
+        }
+        return result;
     }
 
 }

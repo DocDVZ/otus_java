@@ -1,7 +1,6 @@
 package ru.otus.L08.testclasses;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,7 +10,7 @@ public class Client {
 
     private String firstName;
     private String secondName;
-    private Date bithDate;
+    private Date birthDate;
     private Set<String> phones;
     private Address homeAddress;
     private Address registerAddress;
@@ -32,12 +31,12 @@ public class Client {
         this.secondName = secondName;
     }
 
-    public Date getBithDate() {
-        return bithDate;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setBithDate(Date bithDate) {
-        this.bithDate = bithDate;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public Set<String> getPhones() {
@@ -73,7 +72,7 @@ public class Client {
 
         if (firstName != null ? !firstName.equals(client.firstName) : client.firstName != null) return false;
         if (secondName != null ? !secondName.equals(client.secondName) : client.secondName != null) return false;
-        if (bithDate != null ? !bithDate.equals(client.bithDate) : client.bithDate != null) return false;
+        if (birthDate != null ? !birthDate.equals(client.birthDate) : client.birthDate != null) return false;
         if (phones != null ? !phones.equals(client.phones) : client.phones != null) return false;
         if (homeAddress != null ? !homeAddress.equals(client.homeAddress) : client.homeAddress != null) return false;
         return registerAddress != null ? registerAddress.equals(client.registerAddress) : client.registerAddress == null;
@@ -83,7 +82,7 @@ public class Client {
     public int hashCode() {
         int result = firstName != null ? firstName.hashCode() : 0;
         result = 31 * result + (secondName != null ? secondName.hashCode() : 0);
-        result = 31 * result + (bithDate != null ? bithDate.hashCode() : 0);
+        result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
         result = 31 * result + (phones != null ? phones.hashCode() : 0);
         result = 31 * result + (homeAddress != null ? homeAddress.hashCode() : 0);
         result = 31 * result + (registerAddress != null ? registerAddress.hashCode() : 0);
