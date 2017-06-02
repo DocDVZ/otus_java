@@ -11,7 +11,7 @@ public class JsonToolImpl implements JsonTool {
     private final Set<Class<?>> primitives;
 
     public JsonToolImpl() {
-        primitives = new HashSet<>(Arrays.asList(Boolean.TYPE, Long.TYPE, Integer.TYPE, Character.TYPE, Double.TYPE, Float.TYPE, Byte.TYPE, Short.TYPE));
+        primitives = new HashSet<>(Arrays.asList(Boolean.class, Long.class, Integer.class, Character.class, Double.class, Float.class, Byte.class, Short.class));
     }
 
     @Override
@@ -103,8 +103,10 @@ public class JsonToolImpl implements JsonTool {
 
 
     private Boolean isSimple(Class<?> clazz) {
-        if (primitives.contains(clazz)) {
-            return Boolean.TRUE;
+        for (Class<?> pr : primitives){
+            if (clazz.isAssignableFrom(pr)){
+                return Boolean.TRUE;
+            }
         }
         return Boolean.FALSE;
     }

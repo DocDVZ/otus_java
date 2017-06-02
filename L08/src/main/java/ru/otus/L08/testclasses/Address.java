@@ -10,6 +10,8 @@ public class Address {
     private String city;
     private String street;
     private String house;
+    private Integer integer;
+    private long llong;
 
     public String getCountryISOCode() {
         return countryISOCode;
@@ -51,6 +53,22 @@ public class Address {
         this.house = house;
     }
 
+    public Integer getInteger() {
+        return integer;
+    }
+
+    public void setInteger(Integer integer) {
+        this.integer = integer;
+    }
+
+    public long getLlong() {
+        return llong;
+    }
+
+    public void setLlong(long llong) {
+        this.llong = llong;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,12 +76,14 @@ public class Address {
 
         Address address = (Address) o;
 
+        if (llong != address.llong) return false;
         if (countryISOCode != null ? !countryISOCode.equals(address.countryISOCode) : address.countryISOCode != null)
             return false;
         if (zipCode != null ? !zipCode.equals(address.zipCode) : address.zipCode != null) return false;
         if (city != null ? !city.equals(address.city) : address.city != null) return false;
         if (street != null ? !street.equals(address.street) : address.street != null) return false;
-        return house != null ? house.equals(address.house) : address.house == null;
+        if (house != null ? !house.equals(address.house) : address.house != null) return false;
+        return integer != null ? integer.equals(address.integer) : address.integer == null;
     }
 
     @Override
@@ -73,6 +93,8 @@ public class Address {
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (house != null ? house.hashCode() : 0);
+        result = 31 * result + (integer != null ? integer.hashCode() : 0);
+        result = 31 * result + (int) (llong ^ (llong >>> 32));
         return result;
     }
 }

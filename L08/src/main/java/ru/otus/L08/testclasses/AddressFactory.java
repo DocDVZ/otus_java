@@ -39,6 +39,7 @@ public class AddressFactory {
         address.setHouse(String.valueOf(random.nextInt(200)));
         address.setZipCode(String.valueOf(99 + random.nextInt(900)) + String.valueOf(99 + random.nextInt(900)));
         address.setStreet(EntityUtils.getRandomElement(streets));
+        address.setInteger(random.nextInt(1000));
         return address;
     }
 
