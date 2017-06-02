@@ -1,6 +1,5 @@
 package ru.otus.L08.testclasses;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -39,7 +38,8 @@ public class AddressFactory {
         address.setHouse(String.valueOf(random.nextInt(200)));
         address.setZipCode(String.valueOf(99 + random.nextInt(900)) + String.valueOf(99 + random.nextInt(900)));
         address.setStreet(EntityUtils.getRandomElement(streets));
-        address.setInteger(random.nextInt(1000));
+        address.setSomeRandomInteger(random.nextInt(1000));
+        address.setSomeRandomLong(random.nextLong());
         return address;
     }
 

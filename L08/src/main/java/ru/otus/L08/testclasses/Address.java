@@ -10,8 +10,8 @@ public class Address {
     private String city;
     private String street;
     private String house;
-    private Integer integer;
-    private long llong;
+    private Integer someRandomInteger;
+    private long someRandomLong;
 
     public String getCountryISOCode() {
         return countryISOCode;
@@ -53,20 +53,20 @@ public class Address {
         this.house = house;
     }
 
-    public Integer getInteger() {
-        return integer;
+    public Integer getSomeRandomInteger() {
+        return someRandomInteger;
     }
 
-    public void setInteger(Integer integer) {
-        this.integer = integer;
+    public void setSomeRandomInteger(Integer someRandomInteger) {
+        this.someRandomInteger = someRandomInteger;
     }
 
-    public long getLlong() {
-        return llong;
+    public long getSomeRandomLong() {
+        return someRandomLong;
     }
 
-    public void setLlong(long llong) {
-        this.llong = llong;
+    public void setSomeRandomLong(long someRandomLong) {
+        this.someRandomLong = someRandomLong;
     }
 
     @Override
@@ -76,14 +76,14 @@ public class Address {
 
         Address address = (Address) o;
 
-        if (llong != address.llong) return false;
+        if (someRandomLong != address.someRandomLong) return false;
         if (countryISOCode != null ? !countryISOCode.equals(address.countryISOCode) : address.countryISOCode != null)
             return false;
         if (zipCode != null ? !zipCode.equals(address.zipCode) : address.zipCode != null) return false;
         if (city != null ? !city.equals(address.city) : address.city != null) return false;
         if (street != null ? !street.equals(address.street) : address.street != null) return false;
         if (house != null ? !house.equals(address.house) : address.house != null) return false;
-        return integer != null ? integer.equals(address.integer) : address.integer == null;
+        return someRandomInteger != null ? someRandomInteger.equals(address.someRandomInteger) : address.someRandomInteger == null;
     }
 
     @Override
@@ -93,8 +93,8 @@ public class Address {
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (street != null ? street.hashCode() : 0);
         result = 31 * result + (house != null ? house.hashCode() : 0);
-        result = 31 * result + (integer != null ? integer.hashCode() : 0);
-        result = 31 * result + (int) (llong ^ (llong >>> 32));
+        result = 31 * result + (someRandomInteger != null ? someRandomInteger.hashCode() : 0);
+        result = 31 * result + (int) (someRandomLong ^ (someRandomLong >>> 32));
         return result;
     }
 }
