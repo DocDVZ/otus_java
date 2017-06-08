@@ -112,38 +112,23 @@ public class JsonToolImpl implements JsonTool {
     }
 
     private Boolean isString(Class<?> clazz) {
-        if (String.class.isAssignableFrom(clazz)) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return String.class.isAssignableFrom(clazz);
     }
 
     private Boolean isCollection(Class<?> clazz) {
-        if (Collection.class.isAssignableFrom(clazz)) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return Collection.class.isAssignableFrom(clazz);
     }
 
     private Boolean isArray(Class<?> clazz) {
-        if (clazz.isArray()) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return clazz.isArray();
     }
 
-    private Boolean isDate(Class<?> clazz) {
-        if (clazz.isAssignableFrom(Date.class)) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+    private Boolean isDate(Class<?> clazz){
+        return clazz.isAssignableFrom(Date.class);
     }
 
     private Boolean isSimpleElement(Class<?> clazz){
-        if (isArray(clazz) || isCollection(clazz) || isDate(clazz) || isString(clazz) || isSimple(clazz)){
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return isArray(clazz) || isCollection(clazz) || isDate(clazz) || isString(clazz) || isSimple(clazz);
     }
 
 }
