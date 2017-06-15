@@ -3,6 +3,9 @@ package ru.otus.L09.orm;
 
 import org.reflections.Reflections;
 import ru.otus.L09.orm.exceptions.TypeNotSupportedException;
+import ru.otus.L09.orm.metadata.ColumnMetadata;
+import ru.otus.L09.orm.metadata.ColumnType;
+import ru.otus.L09.orm.metadata.TableMetadata;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +15,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,11 +29,11 @@ public final class OrmTool {
     private static final String DECIMAL_DELIMITER = "0;0";
 
     private volatile boolean isInitialized = false;
-    private Set<TableData> entityTables;
+
+    private OrmSessionFactory sessionFactory;
 
 
-    private OrmTool() {
-    }
+    private OrmTool() {}
 
     public static OrmTool getInstance() {
         if (intstance == null) {
@@ -38,37 +42,40 @@ public final class OrmTool {
         return intstance;
     }
 
-    public synchronized void init() {
+    public synchronized void init(OrmConfiguration configuration) {
         if (!isInitialized) {
+            Set<TableMetadata> entityTables = new HashSet<>();
             Reflections ref = new Reflections();
             Set<Class<?>> entityClasses = ref.getTypesAnnotatedWith(Entity.class);
             for (Class<?> clazz : entityClasses) {
                 entityTables.add(prepareEntity(clazz));
             }
-
+            sessionFactory = new OrmSessionFactory(configuration);
+            sessionFactory.setTableMetadatas(entityTables);
+            sessionFactory.validateTables();
             isInitialized = true;
         }
     }
 
 
-    private TableData prepareEntity(Class<?> clazz) {
+    private TableMetadata prepareEntity(Class<?> clazz) {
         String tableName;
         if (clazz.isAnnotationPresent(Table.class)) {
             tableName = clazz.getAnnotation(Table.class).name();
         } else {
             tableName = clazz.getSimpleName();
         }
-        TableData tableData = new TableData(tableName);
+        TableMetadata tableMetadata = new TableMetadata(tableName);
         for (Field field : clazz.getDeclaredFields()) {
             if (!field.isAnnotationPresent(Transient.class)) {
                 String fieldName = field.getName();
                 ColumnType type = defineType(field);
                 String size = defineSize(field, type);
-                ColumnData columnData = new ColumnData(fieldName, type, size);
-                tableData.addColumn(columnData);
+                ColumnMetadata columnMetadata = new ColumnMetadata(fieldName, type, size);
+                tableMetadata.addColumn(columnMetadata);
             }
         }
-        return tableData;
+        return tableMetadata;
     }
 
     private String defineSize(Field field, ColumnType type) {
@@ -85,7 +92,7 @@ public final class OrmTool {
                 return DEFAULT_DECIMAL_SIZE;
             }
         } else {
-            return ColumnData.UNDEFINED_SIZE;
+            return ColumnMetadata.UNDEFINED_SIZE;
         }
     }
 

@@ -1,9 +1,9 @@
-package ru.otus.L09.orm;
+package ru.otus.L09.orm.metadata;
 
 /**
  * Created by dzvyagin on 15.06.2017.
  */
-public class ColumnData {
+public class ColumnMetadata {
 
     private String name;
     private ColumnType type;
@@ -11,7 +11,7 @@ public class ColumnData {
 
     public static final String UNDEFINED_SIZE = "no size";
 
-    public ColumnData(String name, ColumnType type, String size) {
+    public ColumnMetadata(String name, ColumnType type, String size) {
         this.name = name;
         this.type = type;
         this.size = size;
