@@ -5,7 +5,7 @@ package ru.otus.L09.orm.metadata;
  */
 public enum ColumnType {
 
-    VARCHAR("VARCHAR"), BOOLEAN("BOOLEAN"), INTEGER, BIGINT, DECIMAL, TIMESTAMP;
+    VARCHAR("VARCHAR"), BOOLEAN("BOOLEAN"), INTEGER("INTEGER"), BIGINT("BIGINT"), DECIMAL("DECIMAL"), TIMESTAMP("TIMESTAMP");
 
     String mysqlType;
 

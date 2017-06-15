@@ -7,14 +7,14 @@ public class ColumnMetadata {
 
     private String name;
     private ColumnType type;
-    private String size;
+    private String typeSize;
 
-    public static final String UNDEFINED_SIZE = "no size";
+    public static final String UNDEFINED_SIZE = "";
 
-    public ColumnMetadata(String name, ColumnType type, String size) {
+    public ColumnMetadata(String name, ColumnType type, String typeSize) {
         this.name = name;
         this.type = type;
-        this.size = size;
+        this.typeSize = typeSize;
     }
 
     public String getName() {
@@ -33,11 +33,11 @@ public class ColumnMetadata {
         this.type = type;
     }
 
-    public String getSize() {
-        return size;
+    public String getTypeSize() {
+        return typeSize;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setTypeSize(String typeSize) {
+        this.typeSize = typeSize;
     }
 }

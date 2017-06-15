@@ -91,10 +91,11 @@ public class OrmSessionFactory implements EntityManagerFactory {
             Statement statement = connection.createStatement();
             String sql = "CREATE TABLE " + metadata.getName() + " )";
             for (ColumnMetadata columnMetadata : metadata.getColumns()) {
-                sql += "'" + columnMetadata.getName() + "'" +
+                sql += "'" + columnMetadata.getName() + "' " + columnMetadata.getType().getMysqlType() + columnMetadata.getTypeSize() + "\n" ;
             }
-            statement.execute();
-
+            sql += ");";
+            System.out.println("Executing sql: " + sql);
+            statement.execute(sql);
 
         } catch (SQLException e){
             e.printStackTrace();

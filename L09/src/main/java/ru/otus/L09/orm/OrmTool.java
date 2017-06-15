@@ -24,9 +24,9 @@ import java.util.Set;
 public final class OrmTool {
 
     private static OrmTool intstance;
-    private static final String DEFAULT_VARCHAR_SIZE = "255";
-    private static final String DEFAULT_DECIMAL_SIZE = "7;2";
-    private static final String DECIMAL_DELIMITER = "0;0";
+    private static final String DEFAULT_VARCHAR_SIZE = "(255)";
+    private static final String DEFAULT_DECIMAL_SIZE = "(7,2)";
+    private static final String DECIMAL_DELIMITER = ",";
 
     private volatile boolean isInitialized = false;
 
@@ -81,13 +81,13 @@ public final class OrmTool {
     private String defineSize(Field field, ColumnType type) {
         if (type.equals(ColumnType.VARCHAR)) {
             if (field.isAnnotationPresent(Column.class)) {
-                return String.valueOf(field.getAnnotation(Column.class).length());
+                return "(" + field.getAnnotation(Column.class).length() + ")";
             } else {
                 return DEFAULT_VARCHAR_SIZE;
             }
         } else if (type.equals(ColumnType.DECIMAL)) {
             if (field.isAnnotationPresent(Column.class)) {
-                return field.getAnnotation(Column.class).precision() + DECIMAL_DELIMITER + field.getAnnotation(Column.class).scale();
+                return "(" + field.getAnnotation(Column.class).precision() + DECIMAL_DELIMITER + field.getAnnotation(Column.class).scale() + ")";
             } else {
                 return DEFAULT_DECIMAL_SIZE;
             }
