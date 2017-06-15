@@ -8,11 +8,13 @@ public class ColumnMetadata {
     private String name;
     private ColumnType type;
     private String typeSize;
+    private String fieldName;
 
     public static final String UNDEFINED_SIZE = "";
 
-    public ColumnMetadata(String name, ColumnType type, String typeSize) {
+    public ColumnMetadata(String name, String fieldName, ColumnType type, String typeSize) {
         this.name = name;
+        this.fieldName = fieldName;
         this.type = type;
         this.typeSize = typeSize;
     }
@@ -39,5 +41,13 @@ public class ColumnMetadata {
 
     public void setTypeSize(String typeSize) {
         this.typeSize = typeSize;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 }

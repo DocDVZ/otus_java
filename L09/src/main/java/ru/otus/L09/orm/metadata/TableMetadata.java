@@ -8,14 +8,16 @@ import java.util.Set;
  */
 public class TableMetadata {
 
+    private Class clazz;
     private String name;
+    private ColumnMetadata primaryKeyField;
     private Set<ColumnMetadata> columns = new HashSet<>();
 
     public TableMetadata(String name) {
         this.name = name;
     }
 
-    public void addColumn(ColumnMetadata column){
+    public void addColumn(ColumnMetadata column) {
         columns.add(column);
     }
 
@@ -31,4 +33,19 @@ public class TableMetadata {
         return columns;
     }
 
+    public ColumnMetadata getPrimaryKeyField() {
+        return primaryKeyField;
+    }
+
+    public void setPrimaryKeyField(ColumnMetadata primaryKeyField) {
+        this.primaryKeyField = primaryKeyField;
+    }
+
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class clazz) {
+        this.clazz = clazz;
+    }
 }
