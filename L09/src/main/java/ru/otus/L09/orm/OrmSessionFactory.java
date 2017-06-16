@@ -21,7 +21,6 @@ import java.util.Set;
 public class OrmSessionFactory implements EntityManagerFactory {
 
     private OrmConfiguration configuration;
-    private Connection connection;
     private volatile boolean isOpen = false;
     private Set<TableMetadata> tableMetadatas;
 
@@ -29,24 +28,27 @@ public class OrmSessionFactory implements EntityManagerFactory {
         this.configuration = configuration;
         try {
             Class.forName(configuration.getJdbcDriver());
-            connection = DriverManager.getConnection(configuration.getDbUrl(), configuration.getUser(), configuration.getPassword());
             isOpen = true;
-        } catch (SQLException | ClassNotFoundException e){
+        } catch (ClassNotFoundException e){
             e.printStackTrace();
             throw new ConnectionException(e);
         }
     }
 
+    private Connection getConnection() throws SQLException{
+        return DriverManager.getConnection(configuration.getDbUrl(), configuration.getUser(), configuration.getPassword());
+    }
+
     @Override
     public EntityManager createEntityManager() {
-        Statement statement;
+        Connection connection;
         try {
-            statement = connection.createStatement();
+            connection = getConnection();
         } catch (SQLException e){
             e.printStackTrace();
             throw new ConnectionException(e);
         }
-        EntityManager entityManager = new OrmSession(statement);
+        EntityManager entityManager = new OrmSession(connection);
         return entityManager;
     }
 
@@ -57,13 +59,13 @@ public class OrmSessionFactory implements EntityManagerFactory {
 
     @Override
     public void close() {
-        try {
-            connection.close();
+//        try {
+//
             isOpen = false;
-        } catch (SQLException e){
-            e.printStackTrace();
-            throw new ConnectionException(e);
-        }
+//        } catch (SQLException e){
+//            e.printStackTrace();
+//            throw new ConnectionException(e);
+//        }
     }
 
     @Override
@@ -87,7 +89,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
     }
 
     void validateTable(TableMetadata metadata){
-        try( Statement statement = connection.createStatement()) {
+        try( Connection connection = getConnection(); Statement statement = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS `" + metadata.getName() + "` (\n";
             for (ColumnMetadata columnMetadata : metadata.getColumns()) {
                 sql += "`" + columnMetadata.getName() + "` " + columnMetadata.getType().getMysqlType() + columnMetadata.getTypeSize() + ",\n" ;

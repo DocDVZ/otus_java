@@ -6,6 +6,7 @@ import ru.otus.L09.orm.OrmTool;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception{
-
+        
         OrmConfiguration configuration = new OrmConfiguration();
         configuration.setDbUrl(URL);
         configuration.setJdbcDriver(DRIVER);

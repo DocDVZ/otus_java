@@ -7,8 +7,10 @@ import ru.otus.L09.orm.metadata.ColumnMetadata;
 import ru.otus.L09.orm.metadata.TableMetadata;
 
 import javax.persistence.*;
+import javax.swing.plaf.nimbus.State;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,14 +24,14 @@ import java.util.Map;
  */
 public class OrmSession implements EntityManager {
 
-    private Statement statement;
+    private Connection connection;
     private boolean isOpen = true;
     private Map<Class<?>, TableMetadata> classesMetadata;
 
-    public OrmSession(Statement statement) {
+    public OrmSession(Connection connection) {
         //TODO fix bad relationship
         this.classesMetadata = OrmTool.getInstance().classesMetadata;
-        this.statement = statement;
+        this.connection = connection;
     }
 
     private boolean isAcceptable(Object o) {
@@ -262,7 +264,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void close() {
         try {
-            statement.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
@@ -316,8 +318,10 @@ public class OrmSession implements EntityManager {
 
     private void executeSql(String sql) {
         try {
+            Statement statement = connection.createStatement();
             System.out.println("Executing sql: " + sql);
             statement.execute(sql.toString());
+            statement.close();
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }
@@ -325,9 +329,12 @@ public class OrmSession implements EntityManager {
 
     private ResultSet executeSqlWithResultSet(String sql) {
         try {
+            Statement statement = connection.createStatement();
             System.out.println("Executing sql: " + sql);
             statement.execute(sql.toString());
-            return statement.getResultSet();
+            ResultSet resultSet = statement.getResultSet();
+            statement.close();
+            return resultSet;
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }
