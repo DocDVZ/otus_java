@@ -126,7 +126,7 @@ public class OrmSession implements EntityManager {
                 throw new ValidationException(e);
             }
             // TODO change * to on fieldnames
-            StringBuilder sql = new StringBuilder("SELECT * from `" + tableMetadata.getName() + "`");
+            StringBuilder sql = new StringBuilder("SELECT * from `" + tableMetadata.getName() + "` WHERE `" + tableMetadata.getPrimaryKeyField().getName() + "`=" + o );
             ResultSet resultSet = executeSqlWithResultSet(sql.toString());
 
             try {
