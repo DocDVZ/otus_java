@@ -49,8 +49,7 @@ public class App {
         SimpleEntity se2 = em.find(SimpleEntity.class, 1);
         System.out.println("Selected se2: " + se2);
         em.remove(se);
-
-
+        em.close();
 
     }
 

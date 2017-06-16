@@ -58,6 +58,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void persist(Object o) {
         if (isAcceptable(o)) {
+            System.out.println("\nPersisting entity " + o);
             TableMetadata tableMetadata = classesMetadata.get(o.getClass());
             StringBuilder sql = new StringBuilder("INSERT INTO `" + tableMetadata.getName() + "` (");
             String prefix = "";
@@ -82,6 +83,7 @@ public class OrmSession implements EntityManager {
     @Override
     public <T> T merge(T t) {
         if (isAcceptable(t)) {
+            System.out.println("\nMerging entity " + t);
             TableMetadata tableMetadata = classesMetadata.get(t.getClass());
             StringBuilder sql = new StringBuilder("UPDATE `" + tableMetadata.getName() + "` SET ");
             String prefix = "";
@@ -103,6 +105,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void remove(Object o) {
         if (isAcceptable(o)) {
+            System.out.println("\nRemoving entity " + o);
             TableMetadata tableMetadata = classesMetadata.get(o.getClass());
             StringBuilder sql = new StringBuilder("DELETE FROM `" + tableMetadata.getName() + "`");
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
@@ -116,6 +119,7 @@ public class OrmSession implements EntityManager {
     public <T> T find(Class<T> aClass, Object o) {
         T result = null;
         if (isAcceptable(aClass)) {
+            System.out.println("\nLooking for entity, class: " + aClass + ", id: " + o);
             TableMetadata tableMetadata = classesMetadata.get(aClass);
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
             try {
@@ -124,10 +128,10 @@ public class OrmSession implements EntityManager {
                 throw new ValidationException(e);
             }
             // TODO change * to on fieldnames
-            StringBuilder sql = new StringBuilder("SELECT * from `" + tableMetadata.getName() + "`");
-            ResultSet resultSet = executeSqlWithResultSet(sql.toString());
-
+            StringBuilder sql = new StringBuilder("SELECT * from `" + tableMetadata.getName() + "` WHERE `" + tableMetadata.getPrimaryKeyField().getName() + "`=" + o );
+            Statement statement = executeSqlWithStatement(sql.toString());
             try {
+                ResultSet resultSet = statement.getResultSet();
                 boolean isEmpty = true;
                 while (resultSet.next()) {
                     isEmpty = false;
@@ -176,6 +180,7 @@ public class OrmSession implements EntityManager {
                 if (isEmpty){
                     return null;
                 }
+                statement.close();
             } catch (SQLException e) {
                 throw new ConnectionException(e);
             }
@@ -265,6 +270,7 @@ public class OrmSession implements EntityManager {
     public void close() {
         try {
             connection.close();
+            System.out.println("Closing EntityManager");
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
@@ -327,14 +333,12 @@ public class OrmSession implements EntityManager {
         }
     }
 
-    private ResultSet executeSqlWithResultSet(String sql) {
+    private Statement executeSqlWithStatement(String sql) {
         try {
             Statement statement = connection.createStatement();
             System.out.println("Executing sql: " + sql);
             statement.execute(sql.toString());
-            ResultSet resultSet = statement.getResultSet();
-            statement.close();
-            return resultSet;
+            return statement;
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }
