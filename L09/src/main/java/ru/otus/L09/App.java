@@ -18,7 +18,7 @@ public class App {
     private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "admin";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "admin";
 
 
     public static void main(String[] args) throws Exception{
@@ -48,8 +48,7 @@ public class App {
         SimpleEntity se2 = em.find(SimpleEntity.class, 1);
         System.out.println("Selected se2: " + se2);
         em.remove(se);
-
-
+        em.close();
 
     }
 

@@ -56,6 +56,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void persist(Object o) {
         if (isAcceptable(o)) {
+            System.out.println("\nPersisting entity " + o);
             TableMetadata tableMetadata = classesMetadata.get(o.getClass());
             StringBuilder sql = new StringBuilder("INSERT INTO `" + tableMetadata.getName() + "` (");
             String prefix = "";
@@ -80,6 +81,7 @@ public class OrmSession implements EntityManager {
     @Override
     public <T> T merge(T t) {
         if (isAcceptable(t)) {
+            System.out.println("\nMerging entity " + t);
             TableMetadata tableMetadata = classesMetadata.get(t.getClass());
             StringBuilder sql = new StringBuilder("UPDATE `" + tableMetadata.getName() + "` SET ");
             String prefix = "";
@@ -101,6 +103,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void remove(Object o) {
         if (isAcceptable(o)) {
+            System.out.println("\nRemoving entity " + o);
             TableMetadata tableMetadata = classesMetadata.get(o.getClass());
             StringBuilder sql = new StringBuilder("DELETE FROM `" + tableMetadata.getName() + "`");
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
@@ -114,6 +117,7 @@ public class OrmSession implements EntityManager {
     public <T> T find(Class<T> aClass, Object o) {
         T result = null;
         if (isAcceptable(aClass)) {
+            System.out.println("\nLooking for entity, class: " + aClass + ", id: " + o);
             TableMetadata tableMetadata = classesMetadata.get(aClass);
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
             try {
@@ -262,6 +266,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void close() {
         try {
+            System.out.println("Closing EntityManager");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
