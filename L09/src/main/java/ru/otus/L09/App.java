@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class App {
 
-    private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "admin";
     private static final String PASSWORD = "";
