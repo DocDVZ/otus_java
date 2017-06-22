@@ -40,6 +40,7 @@ public class OrmSession implements EntityManager {
         cacheConfiguration.eternal(true);
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
+        System.out.println("Created cache for entityManager: " + name);
         this.classesMetadata = OrmTool.getInstance().classesMetadata;
         this.connection = connection;
         this.cache = cache;
@@ -145,6 +146,25 @@ public class OrmSession implements EntityManager {
         return element == null ? null : element.getObjectValue();
     }
 
+    private void removeElementFromCache(Object o, TableMetadata tableMetadata){
+        boolean isAccessible = false;
+        Field field = null;
+        try {
+            Class<?> clazz = o.getClass();
+            field = clazz.getDeclaredField(tableMetadata.getPrimaryKeyField().getFieldName());
+            isAccessible = field.isAccessible();
+            field.setAccessible(true);
+            Object id = field.get(o);
+            cache.remove(getKey(id, clazz));
+        } catch (NoSuchFieldException | IllegalAccessException e){
+            e.printStackTrace();
+        } finally {
+            if (field!=null){
+                field.setAccessible(isAccessible);
+            }
+        }
+    }
+
 
     @Override
     public void remove(Object o) {
@@ -156,6 +176,7 @@ public class OrmSession implements EntityManager {
             sql.append(" WHERE `" + pk.getName() + "`=" + getMysqlValue(o, pk));
             sql.append(";");
             executeSql(sql.toString());
+            removeElementFromCache(o, tableMetadata);
         }
     }
 
