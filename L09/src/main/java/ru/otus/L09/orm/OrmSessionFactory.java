@@ -13,8 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -65,7 +64,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
     @Override
     public void close() {
 //        try {
-
+            //TODO close all entityManagers
             isOpen = false;
 
 //        } catch (SQLException e){

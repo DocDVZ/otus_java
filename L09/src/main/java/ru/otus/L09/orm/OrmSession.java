@@ -31,11 +31,14 @@ public class OrmSession implements EntityManager {
     private boolean isOpen = true;
     private Map<Class<?>, TableMetadata> classesMetadata;
     private Cache cache;
+    private CacheManager cacheManager;
+    private EntityManagerFactory parentFactory;
 
 
     public OrmSession(Connection connection, CacheManager cacheManager) {
         Long num =  OrmSessionFactory.getEntityManagerCounter().incrementAndGet();
         String name = "EntityManager cache - " + num;
+        this.cacheManager = cacheManager;
         CacheConfiguration cacheConfiguration = new CacheConfiguration(name, Integer.MAX_VALUE);
         cacheConfiguration.eternal(true);
         Cache cache = new Cache(cacheConfiguration);
@@ -340,6 +343,7 @@ public class OrmSession implements EntityManager {
             connection.close();
             System.out.println("Closing EntityManager");
             cache.dispose();
+            cacheManager.removeCache(cache.getName());
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
