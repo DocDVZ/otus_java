@@ -1,5 +1,9 @@
 package ru.otus.L09.orm;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
 import ru.otus.L09.orm.exceptions.ConnectionException;
 import ru.otus.L09.orm.exceptions.NotImplementedException;
 import ru.otus.L09.orm.exceptions.ValidationException;
@@ -7,7 +11,6 @@ import ru.otus.L09.orm.metadata.ColumnMetadata;
 import ru.otus.L09.orm.metadata.TableMetadata;
 
 import javax.persistence.*;
-import javax.swing.plaf.nimbus.State;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -27,12 +30,21 @@ public class OrmSession implements EntityManager {
     private Connection connection;
     private boolean isOpen = true;
     private Map<Class<?>, TableMetadata> classesMetadata;
+    private Cache cache;
 
-    public OrmSession(Connection connection) {
-        //TODO fix bad relationship
+
+    public OrmSession(Connection connection, CacheManager cacheManager) {
+        Long num =  OrmSessionFactory.getEntityManagerCounter().incrementAndGet();
+        String name = "EntityManager cache - " + num;
+        CacheConfiguration cacheConfiguration = new CacheConfiguration(name, Integer.MAX_VALUE);
+        cacheConfiguration.eternal(true);
+        Cache cache = new Cache(cacheConfiguration);
+        cacheManager.addCache(cache);
         this.classesMetadata = OrmTool.getInstance().classesMetadata;
         this.connection = connection;
+        this.cache = cache;
     }
+
 
     private boolean isAcceptable(Object o) {
         if (!classesMetadata.containsKey(o.getClass())) {
@@ -43,6 +55,7 @@ public class OrmSession implements EntityManager {
         }
         return true;
     }
+
 
     private boolean isAcceptable(Class<?> clazz) {
         if (!classesMetadata.containsKey(clazz)) {
@@ -59,7 +72,8 @@ public class OrmSession implements EntityManager {
     public void persist(Object o) {
         if (isAcceptable(o)) {
             System.out.println("\nPersisting entity " + o);
-            TableMetadata tableMetadata = classesMetadata.get(o.getClass());
+            Class<?> clazz = o.getClass();
+            TableMetadata tableMetadata = classesMetadata.get(clazz);
             StringBuilder sql = new StringBuilder("INSERT INTO `" + tableMetadata.getName() + "` (");
             String prefix = "";
             for (ColumnMetadata columnMetadata : tableMetadata.getColumns()) {
@@ -76,6 +90,7 @@ public class OrmSession implements EntityManager {
             }
             sql.append(");");
             executeSql(sql.toString());
+            putElementIntoCache(o, tableMetadata);
         }
     }
 
@@ -84,7 +99,8 @@ public class OrmSession implements EntityManager {
     public <T> T merge(T t) {
         if (isAcceptable(t)) {
             System.out.println("\nMerging entity " + t);
-            TableMetadata tableMetadata = classesMetadata.get(t.getClass());
+            Class<?> clazz = t.getClass();
+            TableMetadata tableMetadata = classesMetadata.get(clazz);
             StringBuilder sql = new StringBuilder("UPDATE `" + tableMetadata.getName() + "` SET ");
             String prefix = "";
             for (ColumnMetadata columnMetadata : tableMetadata.getColumns()) {
@@ -97,8 +113,36 @@ public class OrmSession implements EntityManager {
             sql.append(" WHERE `" + pk.getName() + "`=" + getMysqlValue(t, pk));
             sql.append(";");
             executeSql(sql.toString());
+            putElementIntoCache(t, tableMetadata);
         }
         return t;
+    }
+
+
+    private void putElementIntoCache(Object o, TableMetadata tableMetadata){
+        boolean isAccessible = false;
+        Field field = null;
+        try {
+            Class<?> clazz = o.getClass();
+            field = clazz.getDeclaredField(tableMetadata.getPrimaryKeyField().getFieldName());
+            isAccessible = field.isAccessible();
+            field.setAccessible(true);
+            Object id = field.get(o);
+            Element element = new Element(getKey(id, clazz), o);
+            cache.put(element);
+        } catch (NoSuchFieldException | IllegalAccessException e){
+            e.printStackTrace();
+        } finally {
+            if (field!=null){
+                field.setAccessible(isAccessible);
+            }
+        }
+    }
+
+
+    private Object getElementFromCache(Object id, Class<?> clazz){
+        Element element = cache.get(getKey(id, clazz));
+        return element == null ? null : element.getObjectValue();
     }
 
 
@@ -115,10 +159,16 @@ public class OrmSession implements EntityManager {
         }
     }
 
+
     @Override
     public <T> T find(Class<T> aClass, Object o) {
         T result = null;
         if (isAcceptable(aClass)) {
+            Object tryCache = getElementFromCache(o, aClass);
+            if (tryCache!=null){
+                System.out.println("Retrieved entity from cache " + tryCache);
+                return (T) tryCache;
+            }
             System.out.println("\nLooking for entity, class: " + aClass + ", id: " + o);
             TableMetadata tableMetadata = classesMetadata.get(aClass);
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
@@ -184,10 +234,7 @@ public class OrmSession implements EntityManager {
             } catch (SQLException e) {
                 throw new ConnectionException(e);
             }
-
-
         }
-
         return result;
     }
 
@@ -271,6 +318,7 @@ public class OrmSession implements EntityManager {
         try {
             connection.close();
             System.out.println("Closing EntityManager");
+            cache.dispose();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
@@ -344,4 +392,7 @@ public class OrmSession implements EntityManager {
         }
     }
 
+    private String getKey(Object id, Class<?> clazz){
+        return clazz.getName() + "-" + id;
+    }
 }

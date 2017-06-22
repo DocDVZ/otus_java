@@ -1,5 +1,6 @@
 package ru.otus.L09.orm;
 
+import net.sf.ehcache.CacheManager;
 import ru.otus.L09.orm.exceptions.ConnectionException;
 import ru.otus.L09.orm.exceptions.NotImplementedException;
 import ru.otus.L09.orm.exceptions.ValidationException;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by dzvyagin on 15.06.2017.
@@ -23,12 +25,15 @@ public class OrmSessionFactory implements EntityManagerFactory {
     private OrmConfiguration configuration;
     private volatile boolean isOpen = false;
     private Set<TableMetadata> tableMetadatas;
+    private CacheManager cacheManager;
+    private static AtomicLong entityManagerCounter = new AtomicLong(0);
 
     OrmSessionFactory(OrmConfiguration configuration){
         this.configuration = configuration;
         try {
             Class.forName(configuration.getJdbcDriver());
             isOpen = true;
+            cacheManager = CacheManager.getInstance();
         } catch (ClassNotFoundException e){
             e.printStackTrace();
             throw new ConnectionException(e);
@@ -48,7 +53,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
             e.printStackTrace();
             throw new ConnectionException(e);
         }
-        EntityManager entityManager = new OrmSession(connection);
+        EntityManager entityManager = new OrmSession(connection, cacheManager);
         return entityManager;
     }
 
@@ -60,8 +65,9 @@ public class OrmSessionFactory implements EntityManagerFactory {
     @Override
     public void close() {
 //        try {
-//
+
             isOpen = false;
+
 //        } catch (SQLException e){
 //            e.printStackTrace();
 //            throw new ConnectionException(e);
@@ -105,4 +111,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
         }
     }
 
+    static AtomicLong getEntityManagerCounter() {
+        return entityManagerCounter;
+    }
 }
