@@ -19,7 +19,7 @@ import java.util.*;
  */
 public final class OrmTool {
 
-    private static OrmTool intstance;
+    private static OrmTool instance;
     private static final String DEFAULT_VARCHAR_SIZE = "(255)";
     private static final String DEFAULT_DECIMAL_SIZE = "(7,2)";
     private static final String DECIMAL_DELIMITER = ",";
@@ -34,10 +34,10 @@ public final class OrmTool {
     }
 
     public static OrmTool getInstance() {
-        if (intstance == null) {
-            intstance = new OrmTool();
+        if (instance == null) {
+            instance = new OrmTool();
         }
-        return intstance;
+        return instance;
     }
 
     public synchronized void init(OrmConfiguration configuration) {

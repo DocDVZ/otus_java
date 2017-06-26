@@ -9,6 +9,7 @@ public class OrmConfiguration {
     private String dbUrl;
     private String user;
     private String password;
+    private Integer poolSize = 1;
 
     public String getJdbcDriver() {
         return jdbcDriver;
@@ -40,5 +41,13 @@ public class OrmConfiguration {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(Integer poolSize) {
+        this.poolSize = poolSize;
     }
 }
