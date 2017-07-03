@@ -1,5 +1,7 @@
 package ru.otus.L09.orm;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import net.sf.ehcache.CacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +13,12 @@ import ru.otus.L09.orm.metadata.TableMetadata;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,10 +27,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrmSessionFactory implements EntityManagerFactory {
 
     private OrmConfiguration configuration;
+    private DataSource dataSource;
     private volatile boolean isOpen = false;
     private Set<TableMetadata> tableMetadatas;
     private CacheManager cacheManager;
     private static AtomicLong entityManagerCounter = new AtomicLong(0);
+
 
     private static final Logger LOG = LoggerFactory.getLogger(OrmSessionFactory.class);
 
@@ -37,14 +42,29 @@ public class OrmSessionFactory implements EntityManagerFactory {
             Class.forName(configuration.getJdbcDriver());
             isOpen = true;
             cacheManager = CacheManager.getInstance();
-        } catch (ClassNotFoundException e){
+            HikariConfig hikariConfig = getHikariConfig(configuration);
+            dataSource = new HikariDataSource(hikariConfig);
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
         }
     }
 
-    private Connection getConnection() throws SQLException{
-        return DriverManager.getConnection(configuration.getDbUrl(), configuration.getUser(), configuration.getPassword());
+    private HikariConfig getHikariConfig(OrmConfiguration configuration) {
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(configuration.getDbUrl());
+        hikariConfig.setUsername(configuration.getUser());
+        hikariConfig.setPassword(configuration.getPassword());
+        hikariConfig.setMaximumPoolSize(configuration.getPoolSize());
+        hikariConfig.setAutoCommit(false);
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        return hikariConfig;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     @Override
@@ -52,7 +72,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
         Connection connection;
         try {
             connection = getConnection();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new ConnectionException(e);
         }
@@ -68,8 +88,8 @@ public class OrmSessionFactory implements EntityManagerFactory {
     @Override
     public void close() {
 //        try {
-            //TODO close all entityManagers
-            isOpen = false;
+        //TODO close all entityManagers
+        isOpen = false;
 
 //        } catch (SQLException e){
 //            e.printStackTrace();
@@ -92,16 +112,16 @@ public class OrmSessionFactory implements EntityManagerFactory {
     }
 
     void validateTables() {
-        for (TableMetadata tableMetadata : tableMetadatas){
+        for (TableMetadata tableMetadata : tableMetadatas) {
             validateTable(tableMetadata);
         }
     }
 
-    void validateTable(TableMetadata metadata){
-        try( Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+    void validateTable(TableMetadata metadata) {
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS `" + metadata.getName() + "` (\n";
             for (ColumnMetadata columnMetadata : metadata.getColumns()) {
-                sql += "`" + columnMetadata.getName() + "` " + columnMetadata.getType().getMysqlType() + columnMetadata.getTypeSize() + ",\n" ;
+                sql += "`" + columnMetadata.getName() + "` " + columnMetadata.getType().getMysqlType() + columnMetadata.getTypeSize() + ",\n";
             }
             sql += "primary key(`" + metadata.getPrimaryKeyField().getName() + "`)";
             sql += ");";
@@ -109,7 +129,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
             LOG.debug("Executing sql: " + sql);
             statement.execute(sql);
 
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new ValidationException(e);
         }

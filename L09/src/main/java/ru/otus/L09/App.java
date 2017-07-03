@@ -22,7 +22,8 @@ public class App {
     private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "admin";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "admin";
+    private static final Integer POOL_SIZE = 3;
 
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
@@ -35,6 +36,7 @@ public class App {
         configuration.setJdbcDriver(DRIVER);
         configuration.setUser(USER);
         configuration.setPassword(PASSWORD);
+        configuration.setPoolSize(POOL_SIZE);
 
         // Init ORM
         OrmTool ormTool = OrmTool.getInstance();
