@@ -4,6 +4,8 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.L09.orm.exceptions.ConnectionException;
 import ru.otus.L09.orm.exceptions.NotImplementedException;
 import ru.otus.L09.orm.exceptions.ValidationException;
@@ -34,6 +36,8 @@ public class OrmSession implements EntityManager {
     private CacheManager cacheManager;
     private EntityManagerFactory parentFactory;
 
+    private static final Logger LOG = LoggerFactory.getLogger(OrmSession.class);
+
 
     public OrmSession(Connection connection, CacheManager cacheManager) {
         Long num =  OrmSessionFactory.getEntityManagerCounter().incrementAndGet();
@@ -43,7 +47,7 @@ public class OrmSession implements EntityManager {
         cacheConfiguration.eternal(true);
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
-        System.out.println("Created cache for entityManager: " + name);
+        LOG.debug("Created cache for entityManager: " + name);
         this.classesMetadata = OrmTool.getInstance().classesMetadata;
         this.connection = connection;
         this.cache = cache;
@@ -75,7 +79,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void persist(Object o) {
         if (isAcceptable(o)) {
-            System.out.println("\nPersisting entity " + o);
+            LOG.debug("Persisting entity " + o);
             Class<?> clazz = o.getClass();
             TableMetadata tableMetadata = classesMetadata.get(clazz);
             StringBuilder sql = new StringBuilder("INSERT INTO `" + tableMetadata.getName() + "` (");
@@ -102,7 +106,7 @@ public class OrmSession implements EntityManager {
     @Override
     public <T> T merge(T t) {
         if (isAcceptable(t)) {
-            System.out.println("\nMerging entity " + t);
+            LOG.debug("Merging entity " + t);
             Class<?> clazz = t.getClass();
             TableMetadata tableMetadata = classesMetadata.get(clazz);
             StringBuilder sql = new StringBuilder("UPDATE `" + tableMetadata.getName() + "` SET ");
@@ -172,7 +176,7 @@ public class OrmSession implements EntityManager {
     @Override
     public void remove(Object o) {
         if (isAcceptable(o)) {
-            System.out.println("\nRemoving entity " + o);
+            LOG.debug("Removing entity " + o);
             TableMetadata tableMetadata = classesMetadata.get(o.getClass());
             StringBuilder sql = new StringBuilder("DELETE FROM `" + tableMetadata.getName() + "`");
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
@@ -190,10 +194,10 @@ public class OrmSession implements EntityManager {
         if (isAcceptable(aClass)) {
             Object tryCache = getElementFromCache(o, aClass);
             if (tryCache!=null){
-                System.out.println("Retrieved entity from cache " + tryCache);
+                LOG.debug("Retrieved entity from cache " + tryCache);
                 return (T) tryCache;
             }
-            System.out.println("\nLooking for entity, class: " + aClass + ", id: " + o);
+            LOG.debug("Looking for entity, class: " + aClass + ", id: " + o);
             TableMetadata tableMetadata = classesMetadata.get(aClass);
             ColumnMetadata pk = tableMetadata.getPrimaryKeyField();
             try {
@@ -341,7 +345,7 @@ public class OrmSession implements EntityManager {
     public void close() {
         try {
             connection.close();
-            System.out.println("Closing EntityManager");
+            LOG.debug("Closing EntityManager");
             cache.dispose();
             cacheManager.removeCache(cache.getName());
         } catch (SQLException e) {
@@ -398,7 +402,7 @@ public class OrmSession implements EntityManager {
     private void executeSql(String sql) {
         try {
             Statement statement = connection.createStatement();
-            System.out.println("Executing sql: " + sql);
+            LOG.debug("Executing sql: " + sql);
             statement.execute(sql.toString());
             statement.close();
         } catch (SQLException e) {
@@ -409,7 +413,7 @@ public class OrmSession implements EntityManager {
     private Statement executeSqlWithStatement(String sql) {
         try {
             Statement statement = connection.createStatement();
-            System.out.println("Executing sql: " + sql);
+            LOG.debug("Executing sql: " + sql);
             statement.execute(sql.toString());
             return statement;
         } catch (SQLException e) {

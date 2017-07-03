@@ -1,6 +1,8 @@
 package ru.otus.L09.orm;
 
 import net.sf.ehcache.CacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.L09.orm.exceptions.ConnectionException;
 import ru.otus.L09.orm.exceptions.NotImplementedException;
 import ru.otus.L09.orm.exceptions.ValidationException;
@@ -26,6 +28,8 @@ public class OrmSessionFactory implements EntityManagerFactory {
     private Set<TableMetadata> tableMetadatas;
     private CacheManager cacheManager;
     private static AtomicLong entityManagerCounter = new AtomicLong(0);
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrmSessionFactory.class);
 
     OrmSessionFactory(OrmConfiguration configuration){
         this.configuration = configuration;
@@ -101,7 +105,8 @@ public class OrmSessionFactory implements EntityManagerFactory {
             }
             sql += "primary key(`" + metadata.getPrimaryKeyField().getName() + "`)";
             sql += ");";
-            System.out.println("Executing sql: " + sql);
+
+            LOG.debug("Executing sql: " + sql);
             statement.execute(sql);
 
         } catch (SQLException e){

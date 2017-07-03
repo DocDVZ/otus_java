@@ -1,5 +1,7 @@
 package ru.otus.L09;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.L09.examples.SimpleEntity;
 import ru.otus.L09.orm.OrmConfiguration;
 import ru.otus.L09.orm.OrmTool;
@@ -10,6 +12,7 @@ import javax.persistence.Persistence;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Timer;
 
 /**
  * Created by dzvyagin on 15.06.2017.
@@ -21,17 +24,28 @@ public class App {
     private static final String USER = "admin";
     private static final String PASSWORD = "";
 
+    private static final Logger LOG = LoggerFactory.getLogger(App.class);
+
 
     public static void main(String[] args) throws Exception{
-        
+
+        LOG.info("Starting application");
         OrmConfiguration configuration = new OrmConfiguration();
         configuration.setDbUrl(URL);
         configuration.setJdbcDriver(DRIVER);
         configuration.setUser(USER);
         configuration.setPassword(PASSWORD);
 
+        // Init ORM
         OrmTool ormTool = OrmTool.getInstance();
         ormTool.init(configuration);
+
+
+        // Init Jetty
+//        Server
+
+
+
         EntityManagerFactory emf = ormTool.getSessionFactory();
         EntityManager em = emf.createEntityManager();
 
@@ -47,10 +61,9 @@ public class App {
         se.setStrField("String2");
         em.merge(se);
         SimpleEntity se2 = em.find(SimpleEntity.class, 1);
-        System.out.println("Selected se2: " + se2);
+        LOG.info("Selected se2: " + se2);
         em.remove(se);
         em.close();
-
     }
 
 
