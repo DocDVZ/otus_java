@@ -3,6 +3,7 @@ package ru.otus.L09;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.L09.examples.SimpleEntity;
+import ru.otus.L09.frontend.Frontend;
 import ru.otus.L09.orm.OrmConfiguration;
 import ru.otus.L09.orm.OrmTool;
 
@@ -22,13 +23,14 @@ public class App {
     private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "admin";
-    private static final String PASSWORD = "admin";
+    private static final String PASSWORD = "";
     private static final Integer POOL_SIZE = 3;
+    private static final Integer PORT = 8090;
 
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
         LOG.info("Starting application");
         OrmConfiguration configuration = new OrmConfiguration();
@@ -39,15 +41,23 @@ public class App {
         configuration.setPoolSize(POOL_SIZE);
 
         // Init ORM
+        LOG.info("Initializing ORM");
         OrmTool ormTool = OrmTool.getInstance();
         ormTool.init(configuration);
 
-
         // Init Jetty
-//        Server
+        LOG.info("Initializing Jetty");
+        Thread thread = new Thread(() -> {
+            try {
+                Frontend frontend = new Frontend();
+                frontend.start(PORT);
+            } catch (Exception e) {
+                LOG.error("Cannot initialize frontend", e);
+            }
+        });
+        thread.start();
 
-
-
+        LOG.info("Do some work");
         EntityManagerFactory emf = ormTool.getSessionFactory();
         EntityManager em = emf.createEntityManager();
 
