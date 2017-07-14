@@ -38,6 +38,7 @@ public class PageGenerator {
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }
+        System.out.println();
         return stream.toString();
     }
 }

@@ -1,14 +1,21 @@
 body{
-    background-color: #b5a789;
+    background-color: rgba(227, 255, 244, 0.51);
     font-family: Georgia, "Times New Roman", Times, Serif;
     font-size: small;
     margin: 0px;
+    padding: 10px;
 }
 
 header{
-    background-color: #675c47;
+    background-color: rgba(227, 255, 244, 0.51);
     margin: 10px 10px 0px 10px;
     height: 200px;
+}
+
+button{
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 section#navigation{
@@ -25,4 +32,53 @@ section#main{
     font-size: 105%;
     padding: 15px;
     vertical-align: top;
+}
+
+.expandable {
+    display: block;
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.expandable input {
+    display: none;
+}
+
+.expandable h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.content {
+    overflow:hidden;
+    max-height:0;
+}
+input:checked + .content {
+    max-height: 10000px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.line {
+    width: 100%;
+    display: flex;
+}
+.cell {
+    border:1px solid black;
+    padding: 5px;
+    word-break: break-all;
+}
+
+.width-25 {
+    width: 25%;
+}
+.width-50 {
+    width: 50%;
 }
