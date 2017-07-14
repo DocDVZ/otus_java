@@ -1,4 +1,6 @@
-package ru.otus.L09.frontend;
+package ru.otus.L09.frontend.servlets;
+
+import ru.otus.L09.frontend.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +23,7 @@ public class FrontendServlet extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("lastLogin", login == null ? "" : login);
+//        pageVariables.put("lastLogin", login == null ? "" : login);
         String page = PageGenerator.instance().getPage("monitoring.html", pageVariables);
         response.getWriter().println(page);
     }
