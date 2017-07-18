@@ -16,14 +16,12 @@ import java.util.Map;
  *
  */
 public class PageGenerator {
-    private static final String HTML_DIR = "webapps";
+    private static final String HTML_DIR = "tml";
     private static PageGenerator instance = new PageGenerator();
 
     private final Configuration cfg = new Configuration();
 
-//    private PageGenerator() {
-//        cfg.setClassForTemplateLoading(this.getClass(), "/");
-//    }
+
 
     public static PageGenerator instance() {
         return instance;
