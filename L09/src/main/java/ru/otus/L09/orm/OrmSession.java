@@ -380,6 +380,9 @@ public class OrmSession implements EntityManager {
             }
             field.setAccessible(true);
             Object value = field.get(o);
+            if (value==null){
+                return "NULL";
+            }
             String s = value.toString();
             if (value.getClass().isAssignableFrom(Date.class)) {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -405,6 +408,7 @@ public class OrmSession implements EntityManager {
             LOG.debug("Executing sql: " + sql);
             statement.execute(sql.toString());
             statement.close();
+            connection.commit();
         } catch (SQLException e) {
             throw new ConnectionException(e);
         }

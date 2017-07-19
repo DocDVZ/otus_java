@@ -9,9 +9,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.L09.examples.SimpleEntity;
-import ru.otus.L09.frontend.servlets.AjaxServlet;
-import ru.otus.L09.frontend.servlets.MonitoringServlet;
-import ru.otus.L09.frontend.servlets.LoginServlet;
+import ru.otus.L09.frontend.servlets.*;
 import ru.otus.L09.orm.OrmConfiguration;
 import ru.otus.L09.orm.OrmTool;
 
@@ -50,7 +48,34 @@ public class FrontMain {
         LOG.info("Initializing ORM");
         OrmTool ormTool = OrmTool.getInstance();
         ormTool.init(configuration);
+    }
 
+    public static void main(String[] args) throws Exception {
+
+        startORM();
+
+        Server server = new Server(PORT);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+        context.addServlet(new ServletHolder(new LoginServlet("anonymous")), "/login");
+        context.addServlet(MonitoringServlet.class, "/monitoring");
+        context.addServlet(MXBeansServlet.class, "/ajax");
+        context.addServlet(OrmServlet.class, "/orm");
+        context.addServlet(ORMOperationsServlet.class, "/ormOperations");
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase("public");
+
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[]{resourceHandler, context});
+        server.setHandler(handlers);
+
+        server.start();
+        server.join();
+    }
+
+
+    private static void doOrm(OrmTool ormTool) {
         LOG.info("Do some work");
         EntityManagerFactory emf = ormTool.getSessionFactory();
         EntityManager em = emf.createEntityManager();
@@ -70,28 +95,6 @@ public class FrontMain {
         LOG.info("Selected se2: " + se2);
         em.remove(se);
         em.close();
-    }
-
-    public static void main(String[] args) throws Exception{
-
-        startORM();
-
-        Server server = new Server(PORT);
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-
-        context.addServlet(new ServletHolder(new LoginServlet("anonymous")), "/login");
-        context.addServlet(MonitoringServlet.class, "/monitoring");
-        context.addServlet(AjaxServlet.class, "/ajax");
-
-        ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase("public");
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resourceHandler, context});
-        server.setHandler(handlers);
-
-        server.start();
-        server.join();
     }
 
 }

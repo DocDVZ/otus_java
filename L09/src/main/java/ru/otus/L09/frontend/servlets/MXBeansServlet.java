@@ -3,7 +3,6 @@ package ru.otus.L09.frontend.servlets;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.L09.frontend.PageGenerator;
 
 import javax.management.*;
 import javax.servlet.ServletException;
@@ -11,20 +10,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by DocDVZ on 14.07.2017.
  */
-public class AjaxServlet extends HttpServlet {
+public class MXBeansServlet extends HttpServlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AjaxServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MXBeansServlet.class);
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -32,7 +27,6 @@ public class AjaxServlet extends HttpServlet {
             LOG.debug("REQUEST FOR AJAX");
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
-//            Map<String, Object> pageVariables = new HashMap<>();
             Gson gson = new Gson();
             response.getWriter().println(gson.toJson(spillTheBeans()));
         } catch (Exception e) {
