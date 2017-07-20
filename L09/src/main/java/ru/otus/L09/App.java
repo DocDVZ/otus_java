@@ -45,17 +45,8 @@ public class App {
         OrmTool ormTool = OrmTool.getInstance();
         ormTool.init(configuration);
 
-        // Init Jetty
-        LOG.info("Initializing Jetty");
-        Thread thread = new Thread(() -> {
-            try {
-                Frontend frontend = new Frontend();
-                frontend.start(PORT);
-            } catch (Exception e) {
-                LOG.error("Cannot initialize frontend", e);
-            }
-        });
-        thread.start();
+        Thread thread = new Thread;
+        thread.start();;
 
         LOG.info("Do some work");
         EntityManagerFactory emf = ormTool.getSessionFactory();

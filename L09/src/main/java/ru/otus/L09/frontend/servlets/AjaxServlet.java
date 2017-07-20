@@ -29,7 +29,6 @@ public class AjaxServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
         try {
-            LOG.debug("REQUEST FOR AJAX");
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
             Map<String, Object> pageVariables = new HashMap<>();
@@ -37,22 +36,14 @@ public class AjaxServlet extends HttpServlet {
             Set<ObjectInstance> mBeans = mbs.queryMBeans(null, null);
             Gson gson = new Gson();
             response.getWriter().println(gson.toJson(spillTheBeans()));
-//            spillTheBeans(response.getWriter());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private Set<MBeanWrapper> spillTheBeans(/*final Writer out*/) throws Exception {
-//        final PrintWriter pw = new PrintWriter(out);
-        StringBuilder sb = new StringBuilder("");
-        sb.append("<table>");
+    private Set<MBeanWrapper> spillTheBeans() throws Exception {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-
-        sb.append("  <tr><td colspan='4'>&nbsp;</td></tr>");
-        sb.append("  <tr><td>Server:</td><td colspan='3'>"
-                + server.getClass().getName() + "</td></tr>");
 
         final Set<ObjectName> mbeans = new HashSet<ObjectName>();
         mbeans.addAll(server.queryNames(null, null));
@@ -61,16 +52,11 @@ public class AjaxServlet extends HttpServlet {
             MBeanWrapper mBeanWrapper = new MBeanWrapper();
             mBeanWrapper.setName(mbean.toString());
 
-//            sb.append("  <tr><td colspan='4'>&nbsp;</td></tr>");
-//            sb.append("  <tr><td>MBean:</td><td colspan='3'>" + mbean
-//                    + "</td></tr>");
             Set<WrapperAttribute> attrs = new HashSet<>();
             final MBeanAttributeInfo[] attributes = server.getMBeanInfo(
                     mbean).getAttributes();
             for (final MBeanAttributeInfo attribute : attributes) {
                 WrapperAttribute wa = new WrapperAttribute();
-//                sb.append("  <tr><td>&nbsp;</td><td>" + attribute.getName()
-//                        + "</td><td>" + attribute.getType() + "</td><td>");
                 wa.setName(attribute.getName());
                 wa.setType(attribute.getType());
 
@@ -78,25 +64,18 @@ public class AjaxServlet extends HttpServlet {
                     final Object value = server.getAttribute(mbean,
                             attribute.getName());
                     if (value == null) {
-//                        sb.append("<font color='#660000'>null</font>");
+                        wa.setValue(null);
                     } else {
-//                        sb.append(value.toString());
                         wa.setValue(value.toString());
                     }
                 } catch (Exception e) {
-//                    sb.append("<font color='#990000'>" + e.getMessage()
-//                            + "</font>");
                     wa.setError(e.getMessage());
                 }
                 attrs.add(wa);
-//                sb.append("</td></tr>");
             }
             mBeanWrapper.setAttributes(attrs);
             beans.add(mBeanWrapper);
         }
-//        sb.append("</table>");
-//        pw.println(sb.toString());
-//        pw.flush();
         return beans;
     }
 
