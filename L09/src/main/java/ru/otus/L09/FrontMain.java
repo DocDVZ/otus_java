@@ -8,19 +8,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.L09.examples.SimpleEntity;
-import ru.otus.L09.frontend.Frontend;
-import ru.otus.L09.frontend.servlets.AjaxServlet;
-import ru.otus.L09.frontend.servlets.FrontendServlet;
+import ru.otus.L09.frontend.servlets.*;
 import ru.otus.L09.orm.OrmConfiguration;
 import ru.otus.L09.orm.OrmTool;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.servlet.Servlet;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Date;
 
 /**
  * Created by DocDVZ on 14.07.2017.
@@ -34,21 +24,40 @@ public class FrontMain {
     private static final Integer POOL_SIZE = 3;
     private static final Integer PORT = 8090;
 
-    private static final Logger LOG = LoggerFactory.getLogger(App.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FrontMain.class);
 
 
-    public static void main(String[] args) throws Exception{
+    public static void startORM() throws Exception {
+
+        LOG.info("Starting application");
+        OrmConfiguration configuration = new OrmConfiguration();
+        configuration.setDbUrl(URL);
+        configuration.setJdbcDriver(DRIVER);
+        configuration.setUser(USER);
+        configuration.setPassword(PASSWORD);
+        configuration.setPoolSize(POOL_SIZE);
+
+        // Init ORM
+        LOG.info("Initializing ORM");
+        OrmTool ormTool = OrmTool.getInstance();
+        ormTool.init(configuration);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        startORM();
 
         Server server = new Server(PORT);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-        Servlet frontend = new FrontendServlet();
-        Servlet ajax = new AjaxServlet();
-        context.addServlet(new ServletHolder(frontend), "/");
-        context.addServlet(new ServletHolder(ajax), "/ajax");
+        context.addServlet(new ServletHolder(new LoginServlet("anonymous")), "/login");
+        context.addServlet(MonitoringServlet.class, "/monitoring");
+        context.addServlet(MXBeansServlet.class, "/ajax");
+        context.addServlet(OrmServlet.class, "/orm");
+        context.addServlet(ORMOperationsServlet.class, "/ormOperations");
 
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase("webapps");
+        resourceHandler.setResourceBase("public");
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[]{resourceHandler, context});

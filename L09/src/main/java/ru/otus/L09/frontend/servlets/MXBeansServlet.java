@@ -3,7 +3,6 @@ package ru.otus.L09.frontend.servlets;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.L09.frontend.PageGenerator;
 
 import javax.management.*;
 import javax.servlet.ServletException;
@@ -11,29 +10,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by DocDVZ on 14.07.2017.
  */
-public class AjaxServlet extends HttpServlet {
+public class MXBeansServlet extends HttpServlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AjaxServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MXBeansServlet.class);
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
         try {
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
-            Map<String, Object> pageVariables = new HashMap<>();
-            MBeanServerConnection mbs = ManagementFactory.getPlatformMBeanServer();
-            Set<ObjectInstance> mBeans = mbs.queryMBeans(null, null);
             Gson gson = new Gson();
             response.getWriter().println(gson.toJson(spillTheBeans()));
         } catch (Exception e) {
@@ -42,7 +34,8 @@ public class AjaxServlet extends HttpServlet {
 
     }
 
-    private Set<MBeanWrapper> spillTheBeans() throws Exception {
+
+    private Set<MBeanWrapper> spillTheBeans(/*final Writer out*/) throws Exception {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
         final Set<ObjectName> mbeans = new HashSet<ObjectName>();
@@ -64,7 +57,7 @@ public class AjaxServlet extends HttpServlet {
                     final Object value = server.getAttribute(mbean,
                             attribute.getName());
                     if (value == null) {
-                        wa.setValue(null);
+
                     } else {
                         wa.setValue(value.toString());
                     }
