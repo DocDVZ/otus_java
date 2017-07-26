@@ -26,9 +26,12 @@ public class ParallelSorter {
         } else {
             List<int[]> subarrays = splitArray(values, thrNum);
 
-            IntStream.rangeClosed(1, thrNum).forEach(
-                    p -> threads
-                            .add(new Thread(() -> new Mergesort().sort(subarrays.get(p)))));
+            for (int p = 0; p < thrNum; p++) {
+                final int k = p;
+                threads.add(new Thread(
+                        () -> new Mergesort().sort(subarrays.get(k))
+                ));
+            }
             try {
                 for (Thread t : threads) {
                     t.start();
@@ -49,7 +52,7 @@ public class ParallelSorter {
         }
     }
 
-    private List<int[]> combine(List<int[]> initial) {
+    public List<int[]> combine(List<int[]> initial) {
         List<int[]> result = new ArrayList<>();
         int size = initial.size();
         for (int i = 0; i < size; i++) {
@@ -67,7 +70,7 @@ public class ParallelSorter {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private int[] merge(int[] first, int[] second) {
+    public int[] merge(int[] first, int[] second) {
         int[] result = new int[first.length + second.length];
         //Index Position in first array - starting with first element
         int iFirst = 0;
