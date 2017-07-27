@@ -24,7 +24,6 @@ public class MXBeansServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
         try {
-            LOG.debug("REQUEST FOR AJAX");
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
             Gson gson = new Gson();
@@ -34,6 +33,7 @@ public class MXBeansServlet extends HttpServlet {
         }
 
     }
+
 
     private Set<MBeanWrapper> spillTheBeans(/*final Writer out*/) throws Exception {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();

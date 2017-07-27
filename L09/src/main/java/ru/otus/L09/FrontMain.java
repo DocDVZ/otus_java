@@ -8,16 +8,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.L09.examples.SimpleEntity;
 import ru.otus.L09.frontend.servlets.*;
 import ru.otus.L09.orm.OrmConfiguration;
 import ru.otus.L09.orm.OrmTool;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Date;
 
 /**
  * Created by DocDVZ on 14.07.2017.
@@ -27,7 +20,7 @@ public class FrontMain {
     private static final String URL = "jdbc:mysql://localhost/test_schema?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "admin";
-    private static final String PASSWORD = "admin";
+    private static final String PASSWORD = "";
     private static final Integer POOL_SIZE = 3;
     private static final Integer PORT = 8090;
 
@@ -72,29 +65,6 @@ public class FrontMain {
 
         server.start();
         server.join();
-    }
-
-
-    private static void doOrm(OrmTool ormTool) {
-        LOG.info("Do some work");
-        EntityManagerFactory emf = ormTool.getSessionFactory();
-        EntityManager em = emf.createEntityManager();
-
-        SimpleEntity se = new SimpleEntity();
-        se.setIntField(1);
-        se.setBigDecimalField(new BigDecimal(2));
-        se.setBigIntegerField(BigInteger.valueOf(3));
-        se.setBoolField(false);
-        se.setDateField(new Date());
-        se.setStrField("String");
-        em.persist(se);
-
-        se.setStrField("String2");
-        em.merge(se);
-        SimpleEntity se2 = em.find(SimpleEntity.class, 1);
-        LOG.info("Selected se2: " + se2);
-        em.remove(se);
-        em.close();
     }
 
 }
