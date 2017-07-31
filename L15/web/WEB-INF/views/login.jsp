@@ -1,12 +1,14 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" isELIgnored="false"
+         pageEncoding="UTF-8"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8"/>
   <title>Login</title>
-  <link type="text/css" href="background.css" rel="stylesheet"/>
+  <link type="text/css" href="resources/background.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="top">
-  <img src="logo.png"/>
+  <img src="resources/logo.png"/>
   <br/>
 </div>
 <div class="login">
