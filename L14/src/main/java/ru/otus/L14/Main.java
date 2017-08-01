@@ -2,6 +2,7 @@ package ru.otus.L14;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class Main {
@@ -37,6 +38,8 @@ public class Main {
             System.out.println();
             LENGTH *= 2;   // double size of array for next time
         }
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        atomicInteger.incrementAndGet();
     }
 
     // Creates an array of the given length, fills it with random

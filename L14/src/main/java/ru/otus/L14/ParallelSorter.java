@@ -30,6 +30,8 @@ public class ParallelSorter {
                     p -> threads
                             .add(new Thread(() -> new Mergesort().sort(subarrays.get(p)))));
             try {
+                // TODO sychronize parts join do it
+
                 for (Thread t : threads) {
                     t.start();
                 }
