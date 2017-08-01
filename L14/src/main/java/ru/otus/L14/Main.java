@@ -12,11 +12,11 @@ public class Main {
 
     public static void main(String[] args) {
         int LENGTH = 1000;   // initial length of array to sort
-        int RUNS   =  10;   // how many times to grow by 2?
+        int RUNS = 10;   // how many times to grow by 2?
 
         for (int i = 1; i <= RUNS; i++) {
             int[] a = createRandomArray(LENGTH);
-            int threads = i*2;
+            int threads = i * 2;
             // run the algorithm and time how long it takes
             long startTime1 = System.currentTimeMillis();
             ParallelSorter ps = new ParallelSorter(threads);
@@ -26,7 +26,7 @@ public class Main {
             if (!isSorted(b)) {
                 throw new RuntimeException("not sorted afterward: " + Arrays.toString(b));
             }
-            System.out.printf("%10d elements, my sort, %2d threads  =>  %6d ms \n", LENGTH,  threads, endTime1 - startTime1);
+            System.out.printf("%10d elements, my sort, %2d threads  =>  %6d ms \n", LENGTH, threads, endTime1 - startTime1);
             long startTime2 = System.currentTimeMillis();
             int[] c = IntStream.of(a).parallel().sorted().toArray();
             long endTime2 = System.currentTimeMillis();
@@ -57,6 +57,7 @@ public class Main {
     public static boolean isSorted(int[] a) {
         for (int i = 0; i < a.length - 1; i++) {
             if (a[i] > a[i + 1]) {
+                System.out.println("i=" + i + " a[i]=" + a[i] + " a[i+1]=" + a[i + 1]);
                 return false;
             }
         }
