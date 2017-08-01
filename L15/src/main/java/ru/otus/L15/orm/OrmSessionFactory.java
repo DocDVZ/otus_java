@@ -1,7 +1,5 @@
 package ru.otus.L15.orm;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import net.sf.ehcache.CacheManager;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -38,48 +36,26 @@ public class OrmSessionFactory implements EntityManagerFactory {
     private static final String DECIMAL_DELIMITER = ",";
     private static Map<Class<?>, TableMetadata> classesMetadata = new HashMap<>();
 
-    private volatile boolean isInitialized = false;
-
 
     private static final Logger LOG = LoggerFactory.getLogger(OrmSessionFactory.class);
 
-    public OrmSessionFactory(DataSource dataSource){
-
-        this.configuration = configuration;
+    public OrmSessionFactory(DataSource dataSource, String packageToScan){
         try {
             this.dataSource = dataSource;
-//            Class.forName(configuration.getJdbcDriver());
-//            isOpen = true;
             cacheManager = CacheManager.getInstance();
-//            HikariConfig hikariConfig = getHikariConfig(configuration);
-//            dataSource = new HikariDataSource(hikariConfig);
-
             tableMetadatas = new HashSet<>();
-            Reflections ref = new Reflections();
-
+            Reflections ref = new Reflections(packageToScan);
             Set<Class<?>> entityClasses = ref.getTypesAnnotatedWith(Entity.class);
             for (Class<?> clazz : entityClasses) {
                 TableMetadata tableMetadata = prepareEntity(clazz);
                 tableMetadatas.add(tableMetadata);
                 classesMetadata.put(clazz, tableMetadata);
             }
+            validateTables();
         } catch (Exception e) {
             LOG.error("Exception occured when trying to initialize ORM provider.", e);
             throw new ORMInitializationException(e);
         }
-    }
-
-    private HikariConfig getHikariConfig(OrmConfiguration configuration) {
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(configuration.getDbUrl());
-        hikariConfig.setUsername(configuration.getUser());
-        hikariConfig.setPassword(configuration.getPassword());
-        hikariConfig.setMaximumPoolSize(configuration.getPoolSize());
-        hikariConfig.setAutoCommit(false);
-        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        return hikariConfig;
     }
 
     private Connection getConnection() throws SQLException {
@@ -122,15 +98,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
     }
 
 
-    public Set<TableMetadata> getTableMetadatas() {
-        return tableMetadatas;
-    }
-
-    public void setTableMetadatas(Set<TableMetadata> tableMetadata) {
-        this.tableMetadatas = tableMetadata;
-    }
-
-    void validateTables() {
+    private void validateTables() {
         for (TableMetadata tableMetadata : tableMetadatas) {
             validateTable(tableMetadata);
         }

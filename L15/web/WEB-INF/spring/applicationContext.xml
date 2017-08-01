@@ -32,6 +32,7 @@
 
     <bean id="EntityManagerFactory" class="ru.otus.L15.orm.OrmSessionFactory">
         <constructor-arg name="dataSource" ref="dataSource"/>
+        <constructor-arg name="packageToScan" value="ru.otus.L15.examples"/>
     </bean>
 
 </beans>

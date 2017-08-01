@@ -10,7 +10,6 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

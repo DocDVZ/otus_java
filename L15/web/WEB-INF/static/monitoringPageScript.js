@@ -4,7 +4,7 @@ function buttonClick() {
         url: "/ajax/beans",
         success: function(result) {
             var acc = document.getElementById("accordion");
-            var resultObject = JSON.parse(result);
+            var resultObject = result;
             resultObject.forEach(function (item, i, arr) {
                 var label = document.createElement("label");
                 label.setAttribute("class", "expandable");
