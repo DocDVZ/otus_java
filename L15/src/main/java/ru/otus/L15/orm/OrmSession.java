@@ -39,7 +39,7 @@ public class OrmSession implements EntityManager {
     private static final Logger LOG = LoggerFactory.getLogger(OrmSession.class);
 
 
-    public OrmSession(Connection connection, CacheManager cacheManager) {
+    public OrmSession(Connection connection, CacheManager cacheManager, Map<Class<?>, TableMetadata> classesMetadata) {
         Long num =  OrmSessionFactory.getEntityManagerCounter().incrementAndGet();
         String name = "EntityManager cache - " + num;
         this.cacheManager = cacheManager;
@@ -48,7 +48,7 @@ public class OrmSession implements EntityManager {
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
         LOG.debug("Created cache for entityManager: " + name);
-        this.classesMetadata = OrmTool.getClassesMetadata();
+        this.classesMetadata = classesMetadata;
         this.connection = connection;
         this.cache = cache;
     }
@@ -189,6 +189,7 @@ public class OrmSession implements EntityManager {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T find(Class<T> aClass, Object o) {
         T result = null;
         if (isAcceptable(aClass)) {

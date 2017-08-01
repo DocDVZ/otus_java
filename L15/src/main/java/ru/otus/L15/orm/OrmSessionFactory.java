@@ -3,22 +3,23 @@ package ru.otus.L15.orm;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.sf.ehcache.CacheManager;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.L15.orm.exceptions.ConnectionException;
-import ru.otus.L15.orm.exceptions.NotImplementedException;
-import ru.otus.L15.orm.exceptions.ValidationException;
+import ru.otus.L15.orm.exceptions.*;
 import ru.otus.L15.orm.metadata.ColumnMetadata;
+import ru.otus.L15.orm.metadata.ColumnType;
 import ru.otus.L15.orm.metadata.TableMetadata;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.*;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -32,21 +33,39 @@ public class OrmSessionFactory implements EntityManagerFactory {
     private Set<TableMetadata> tableMetadatas;
     private CacheManager cacheManager;
     private static AtomicLong entityManagerCounter = new AtomicLong(0);
+    private static final String DEFAULT_VARCHAR_SIZE = "(255)";
+    private static final String DEFAULT_DECIMAL_SIZE = "(7,2)";
+    private static final String DECIMAL_DELIMITER = ",";
+    private static Map<Class<?>, TableMetadata> classesMetadata = new HashMap<>();
+
+    private volatile boolean isInitialized = false;
 
 
     private static final Logger LOG = LoggerFactory.getLogger(OrmSessionFactory.class);
 
-    OrmSessionFactory(OrmConfiguration configuration){
+    public OrmSessionFactory(DataSource dataSource){
+
         this.configuration = configuration;
         try {
-            Class.forName(configuration.getJdbcDriver());
-            isOpen = true;
+            this.dataSource = dataSource;
+//            Class.forName(configuration.getJdbcDriver());
+//            isOpen = true;
             cacheManager = CacheManager.getInstance();
-            HikariConfig hikariConfig = getHikariConfig(configuration);
-            dataSource = new HikariDataSource(hikariConfig);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ConnectionException(e);
+//            HikariConfig hikariConfig = getHikariConfig(configuration);
+//            dataSource = new HikariDataSource(hikariConfig);
+
+            tableMetadatas = new HashSet<>();
+            Reflections ref = new Reflections();
+
+            Set<Class<?>> entityClasses = ref.getTypesAnnotatedWith(Entity.class);
+            for (Class<?> clazz : entityClasses) {
+                TableMetadata tableMetadata = prepareEntity(clazz);
+                tableMetadatas.add(tableMetadata);
+                classesMetadata.put(clazz, tableMetadata);
+            }
+        } catch (Exception e) {
+            LOG.error("Exception occured when trying to initialize ORM provider.", e);
+            throw new ORMInitializationException(e);
         }
     }
 
@@ -76,7 +95,7 @@ public class OrmSessionFactory implements EntityManagerFactory {
             e.printStackTrace();
             throw new ConnectionException(e);
         }
-        EntityManager entityManager = new OrmSession(connection, cacheManager);
+        EntityManager entityManager = new OrmSession(connection, cacheManager, classesMetadata);
         return entityManager;
     }
 
@@ -137,5 +156,91 @@ public class OrmSessionFactory implements EntityManagerFactory {
 
     static AtomicLong getEntityManagerCounter() {
         return entityManagerCounter;
+    }
+
+    private TableMetadata prepareEntity(Class<?> clazz) {
+        String tableName;
+        if (clazz.isAnnotationPresent(Table.class)) {
+            tableName = clazz.getAnnotation(Table.class).name();
+        } else {
+            tableName = clazz.getSimpleName();
+        }
+        TableMetadata tableMetadata = new TableMetadata(tableName);
+        ColumnMetadata pk = null;
+        for (Field field : clazz.getDeclaredFields()) {
+            if (!field.isAnnotationPresent(Transient.class)) {
+                String fieldName = defineName(field);
+                ColumnType type = defineType(field);
+                String size = defineSize(field, type);
+
+                ColumnMetadata columnMetadata = new ColumnMetadata(fieldName, field.getName(), type, size);
+                tableMetadata.addColumn(columnMetadata);
+                if (field.isAnnotationPresent(Id.class)) {
+                    if (pk != null) {
+                        throw new ValidationException("Several PK found for entity " + clazz.getSimpleName());
+                    } else {
+                        pk = columnMetadata;
+                    }
+                }
+            }
+        }
+        if (pk == null) {
+            throw new ValidationException("No PK found for entity " + clazz.getSimpleName());
+        }
+        tableMetadata.setPrimaryKeyField(pk);
+        return tableMetadata;
+    }
+
+    private String defineName(Field field) {
+        if (field.isAnnotationPresent(Column.class)) {
+            String name = field.getAnnotation(Column.class).name();
+            if (name != null && !name.isEmpty()) {
+                return name;
+            } else {
+                return field.getName();
+            }
+        } else {
+            return field.getName();
+        }
+
+    }
+
+    private String defineSize(Field field, ColumnType type) {
+        if (type.equals(ColumnType.VARCHAR)) {
+            if (field.isAnnotationPresent(Column.class)) {
+                return "(" + field.getAnnotation(Column.class).length() + ")";
+            } else {
+                return DEFAULT_VARCHAR_SIZE;
+            }
+        } else if (type.equals(ColumnType.DECIMAL)) {
+            if (field.isAnnotationPresent(Column.class)) {
+                return "(" + field.getAnnotation(Column.class).precision() + DECIMAL_DELIMITER + field.getAnnotation(Column.class).scale() + ")";
+            } else {
+                return DEFAULT_DECIMAL_SIZE;
+            }
+        } else {
+            return ColumnMetadata.UNDEFINED_SIZE;
+        }
+    }
+
+    private ColumnType defineType(Field field) {
+        Class<?> clazz = field.getType();
+        if (clazz.equals(Integer.class)) {
+            return ColumnType.INTEGER;
+        } else if (clazz.equals(BigInteger.class)) {
+            return ColumnType.BIGINT;
+        } else if (clazz.equals(Long.class)){
+            return ColumnType.LONG;
+        } else if (clazz.equals(Boolean.class)) {
+            return ColumnType.BOOLEAN;
+        } else if (clazz.equals(Date.class)) {
+            return ColumnType.TIMESTAMP;
+        } else if (clazz.equals(Double.class) || clazz.equals(BigDecimal.class)) {
+            return ColumnType.DECIMAL;
+        } else if (clazz.equals(String.class)) {
+            return ColumnType.VARCHAR;
+        } else {
+            throw new TypeNotSupportedException("Class " + clazz + " is not supported yet.");
+        }
     }
 }
