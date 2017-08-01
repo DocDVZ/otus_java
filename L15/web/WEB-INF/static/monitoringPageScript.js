@@ -1,7 +1,7 @@
 function buttonClick() {
     $.ajax({
         type: "GET",
-        url: "/ajax",
+        url: "/ajax/beans",
         success: function(result) {
             var acc = document.getElementById("accordion");
             var resultObject = JSON.parse(result);

@@ -5,21 +5,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
-public class AppController {
+public class ViewsController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AppController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ViewsController.class);
 
 
     @RequestMapping(value = {"/home", "/"})
