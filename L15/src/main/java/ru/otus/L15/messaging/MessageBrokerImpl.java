@@ -14,9 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MessageBrokerImpl implements MessageBroker {
 
-    private final Map<Integer, Request> requestMap = new ConcurrentHashMap<>();
     private final Map<String, MessageConsumer> consumerMap = new HashMap<>();
-
 
 
     @Autowired
@@ -28,8 +26,6 @@ public class MessageBrokerImpl implements MessageBroker {
 
 
     public RequestResult processRequest(Request request){
-        Integer requestID = request.getID();
-        requestMap.put(requestID, request);
         MessageConsumer handler =consumerMap.get(request.getConsumerID());
         if (handler==null){
             throw new WrongAddressException("No consumer found for request " + request);
@@ -37,7 +33,6 @@ public class MessageBrokerImpl implements MessageBroker {
             handler.handleRequest(request);
         }
         RequestResult result = request.getResult();
-        requestMap.remove(requestID);
         return result;
     }
 }
