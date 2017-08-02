@@ -14,7 +14,7 @@
     <a href="/index.html">Home</a>
 </div>
 <div class="operation">
-    <h2>Create/update operation</h2>
+    <h2>Create operation</h2>
     <div>
         <form id="newEntityForm">
             intField:<br>
@@ -31,7 +31,7 @@
             <input type="number" name="bigIntegerField"/>
             dateField:<br>
             <input type="datetime-local" name="dateField"/>
-            <button type="button" id="createButton" onclick="newSimpleEntity()">Create/update entity</button>
+            <button type="button" id="createButton" onclick="newSimpleEntity()">Create new entity</button>
         </form>
     </div>
 

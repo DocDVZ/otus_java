@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class OrmSessionFactory implements EntityManagerFactory {
 
-    private OrmConfiguration configuration;
     private DataSource dataSource;
     private volatile boolean isOpen = false;
     private Set<TableMetadata> tableMetadatas;
