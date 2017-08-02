@@ -1,5 +1,7 @@
 package ru.otus.L15.app;
 
+import java.util.concurrent.Future;
+
 /**
  * Created by DocDVZ on 01.08.2017.
  */

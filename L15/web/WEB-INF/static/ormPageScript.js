@@ -2,7 +2,7 @@ function newSimpleEntity() {
     var content = objectifyForm($("#newEntityForm").serializeArray());
     $.ajax({
             type: "POST",
-            url: "/ormOperations",
+            url: "/ajax/ormOperations",
             data: JSON.stringify(content),
             contentType: "application/json",
             dataType: "text",
@@ -17,10 +17,10 @@ function readSimpleEntity() {
     var content = $("#readInput").val();
     $.ajax({
             type: "GET",
-            url: "/ormOperations",
+            url: "/ajax/ormOperations",
             contentType: "application/json",
             dataType: "text",
-            data: 'intField=' + content,
+            data: {"intField": content},
             complete: function (xhr, textStatus) {
                 writeResult(xhr.status + " - read - " + xhr.responseText);
             }

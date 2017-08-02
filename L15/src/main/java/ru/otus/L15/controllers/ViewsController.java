@@ -22,13 +22,13 @@ public class ViewsController {
 
     @RequestMapping(value = {"/home", "/"})
     public String home() {
-        LOG.trace("HomeController: / or /home, redirecting to /login");
+        LOG.debug("HomeController: / or /home, redirecting to /login");
         return "redirect:login";
     }
 
     @RequestMapping(value = {"/login"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String loginPage(@RequestParam(required = false, name = "login", defaultValue = "anonymous") String login, HttpServletRequest request, HttpServletResponse response, Model model) {
-        LOG.trace("HomeController: /login, login={}", login);
+        LOG.debug("HomeController: /login, login={}", login);
         response.addCookie(new Cookie("L15.1-login", login));
         request.getSession().setAttribute("login", login);
         response.setStatus(HttpServletResponse.SC_OK);
@@ -38,8 +38,13 @@ public class ViewsController {
     }
 
     @RequestMapping(value = "/monitoring")
-    public ModelAndView getMonitoring(){
-        return new ModelAndView("monitoring");
+    public String getMonitoring(){
+        return "monitoring";
+    }
+
+    @RequestMapping(value = "/orm")
+    public String getORM(){
+        return "orm";
     }
 
 

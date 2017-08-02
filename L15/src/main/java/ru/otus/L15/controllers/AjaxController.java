@@ -2,9 +2,17 @@ package ru.otus.L15.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.otus.L15.app.MessageBroker;
+import ru.otus.L15.dao.CRUDCommand;
+import ru.otus.L15.examples.SimpleEntity;
+import ru.otus.L15.messaging.DAORequest;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServer;
@@ -17,12 +25,15 @@ import java.util.Set;
 @RequestMapping("/ajax")
 public class AjaxController {
 
+    @Autowired
+    private MessageBroker messageBroker;
+
     private static Logger LOG = LoggerFactory.getLogger(AjaxController.class);
 
     @RequestMapping(value = "/beans", method = RequestMethod.GET)
     public Set<MBeanWrapper> getBeans() {
         try {
-            LOG.trace("AjaxController: /ajax/beans");
+            LOG.debug("AjaxController: /ajax/beans");
             Set<MBeanWrapper> result = spillTheBeans();
             return result;
         } catch (Exception e) {
@@ -30,6 +41,26 @@ public class AjaxController {
             return null;
         }
     }
+
+    @RequestMapping(value =  "/ormOperations", method = RequestMethod.GET)
+    public SimpleEntity getEntity(@RequestParam(name = "intField") Integer id){
+        DAORequest request = new DAORequest(CRUDCommand.READ, id);
+        SimpleEntity entity = (SimpleEntity) messageBroker.processRequest(request).getPayload();
+        return entity;
+    }
+
+    @RequestMapping(value =  "/ormOperations", method = RequestMethod.POST)
+    public ResponseEntity createEntity(@RequestParam SimpleEntity entity){
+        DAORequest request = new DAORequest(CRUDCommand.CREATE, entity);
+        if (messageBroker.processRequest(request).isSuccess()){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
 
     private Set<MBeanWrapper> spillTheBeans(/*final Writer out*/) throws Exception {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
