@@ -49,7 +49,7 @@ public class AjaxController {
 
     @RequestMapping(value =  "/ormOperations", method = RequestMethod.POST)
     public ResponseEntity createEntity(@RequestBody SimpleEntity entity){
-        LOG.debug("AjaxController: /ajax/ormOperations updating enity " + entity);
+        LOG.debug("AjaxController: /ajax/ormOperations updating entity " + entity);
         if (entity==null){
             return new ResponseEntity<>(HttpStatus.OK);
         }

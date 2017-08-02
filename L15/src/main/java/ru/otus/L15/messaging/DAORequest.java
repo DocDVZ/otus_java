@@ -26,13 +26,13 @@ public class DAORequest implements Request {
     }
 
     public RequestResult getResult() {
-        if (!isReady) {
-            try {
-                synchronized (lock) {
+        synchronized (lock) {
+            if (!isReady) {
+                try {
                     lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         return result;
@@ -40,8 +40,8 @@ public class DAORequest implements Request {
 
     public void setResult(RequestResult result) {
         this.result = result;
-        isReady = true;
         synchronized (lock) {
+            isReady = true;
             lock.notify();
         }
     }
