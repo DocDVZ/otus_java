@@ -3,13 +3,13 @@
     <meta charset="UTF-8"/>
     <title>ORM</title>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="ormPageScript.js"></script>
-    <link type="text/css" href="background.css" rel="stylesheet"/>
-    <link type="text/css" href="orm.css" rel="stylesheet"/>
+    <script src="/resources/ormPageScript.js"></script>
+    <link type="text/css" href="/resources/background.css" rel="stylesheet"/>
+    <link type="text/css" href="/resources/orm.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="top">
-    <img src="logo.png"/>
+    <img src="/resources/logo.png"/>
     <br/>
     <a href="/index.html">Home</a>
 </div>
