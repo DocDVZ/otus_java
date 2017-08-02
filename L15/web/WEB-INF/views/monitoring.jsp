@@ -12,7 +12,7 @@
         <div class="top">
             <img src="/resources/logo.png"/>
             <br/>
-            <a href="/index.html">Home</a>
+            <a href="/">Home</a>
         </div>
         <div>
             <button id="getBeansButton" onclick="buttonClick()">Get MBeans</button>

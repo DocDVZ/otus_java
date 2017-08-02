@@ -10,6 +10,7 @@ public class DAORequest implements Request {
     private final Integer id;
     private static final String CONSUMER_ID = ConsumersContext.SIMPLE_ENTITY_DAO_ID;
     private volatile boolean isReady = false;
+    private Object lock = new Object();
 
     public DAORequest(CRUDCommand command, Object payload) {
 
@@ -27,7 +28,9 @@ public class DAORequest implements Request {
     public RequestResult getResult() {
         if (!isReady) {
             try {
-                wait();
+                synchronized (lock) {
+                    lock.wait();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -38,8 +41,8 @@ public class DAORequest implements Request {
     public void setResult(RequestResult result) {
         this.result = result;
         isReady = true;
-        synchronized (this) {
-            notify();
+        synchronized (lock) {
+            lock.notify();
         }
     }
 

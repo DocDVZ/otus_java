@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.L15.app.MessageBroker;
 import ru.otus.L15.dao.CRUDCommand;
 import ru.otus.L15.examples.SimpleEntity;
@@ -44,13 +41,18 @@ public class AjaxController {
 
     @RequestMapping(value =  "/ormOperations", method = RequestMethod.GET)
     public SimpleEntity getEntity(@RequestParam(name = "intField") Integer id){
+        LOG.debug("AjaxController: /ajax/ormOperations getting entity by id " + id);
         DAORequest request = new DAORequest(CRUDCommand.READ, id);
         SimpleEntity entity = (SimpleEntity) messageBroker.processRequest(request).getPayload();
         return entity;
     }
 
     @RequestMapping(value =  "/ormOperations", method = RequestMethod.POST)
-    public ResponseEntity createEntity(@RequestParam SimpleEntity entity){
+    public ResponseEntity createEntity(@RequestBody SimpleEntity entity){
+        LOG.debug("AjaxController: /ajax/ormOperations updating enity " + entity);
+        if (entity==null){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
         DAORequest request = new DAORequest(CRUDCommand.CREATE, entity);
         if (messageBroker.processRequest(request).isSuccess()){
             return new ResponseEntity<>(HttpStatus.OK);

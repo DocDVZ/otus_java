@@ -5,7 +5,7 @@ function newSimpleEntity() {
             url: "/ajax/ormOperations",
             data: JSON.stringify(content),
             contentType: "application/json",
-            dataType: "text",
+            dataType: "json",
             complete: function (xhr, textStatus) {
                 writeResult(xhr.status + " - persist/update - " + xhr.responseText);
             }
@@ -19,7 +19,7 @@ function readSimpleEntity() {
             type: "GET",
             url: "/ajax/ormOperations",
             contentType: "application/json",
-            dataType: "text",
+            dataType: "json",
             data: {"intField": content},
             complete: function (xhr, textStatus) {
                 writeResult(xhr.status + " - read - " + xhr.responseText);
