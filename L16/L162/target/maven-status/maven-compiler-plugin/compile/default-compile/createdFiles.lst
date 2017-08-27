@@ -1,0 +1,5 @@
+ru\otus\L162\App.class
+ru\otus\L162\channel\MessageChannel.class
+ru\otus\L162\messaging\exceptions\WrongStatusException.class
+ru\otus\L162\messaging\EventListener.class
+ru\otus\L162\messaging\exceptions\WrongAddressException.class
