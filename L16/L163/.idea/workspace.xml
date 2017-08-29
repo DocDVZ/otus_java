@@ -259,11 +259,6 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="L163" type="b2602c69:ProjectViewProjectNode" />
-              <item name="L163" type="462c0819:PsiDirectoryNode" />
-              <item name="target" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -416,12 +411,12 @@
       <option name="presentableId" value="Default" />
       <updated>1504005934249</updated>
       <workItem from="1504005947049" duration="13035000" />
-      <workItem from="1504022806418" duration="1065000" />
+      <workItem from="1504022806418" duration="1308000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14100000" />
+    <option name="totallyTimeSpent" value="14343000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />

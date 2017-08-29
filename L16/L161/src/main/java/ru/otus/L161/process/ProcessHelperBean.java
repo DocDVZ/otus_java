@@ -16,7 +16,7 @@ public class ProcessHelperBean {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessHelperBean.class);
     private static final String MESSAGE_SERVER_START_COMMAND = "java -jar ";
     private static final String MESSAGE_SERVER_NAME = "Message Server";
-    private static final String DAO_SERVICE_NAME = "Message Server";
+    private static final String DAO_SERVICE_NAME = "Dao service";
     private static final String PROPERTY_NAME = "catalina.home";
     private static final String MSG_JAR_NAME = "MessageService.jar";
     private static final String DAO_JAR_NAME = "DaoService.jar";
