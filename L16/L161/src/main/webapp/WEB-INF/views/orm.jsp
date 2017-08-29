@@ -29,8 +29,7 @@
             <input type="number" step="0.01" name="bigDecimalField"/>
             bigIntegerField:<br>
             <input type="number" name="bigIntegerField"/>
-            dateField:<br>
-            <input type="datetime-local" name="dateField"/>
+            <br>
             <button type="button" id="createButton" onclick="newSimpleEntity()">Create new entity</button>
         </form>
     </div>

@@ -38,7 +38,7 @@ public class DaoRequestProcessor implements RequestProcessor<DaoSocketMessage> {
                         responseData = entity;
                         break;
                     case READ:
-                        responseData = em.find(SimpleEntity.class, entity.getBigIntegerField());
+                        responseData = em.find(SimpleEntity.class, entity.getIntField());
                         break;
                     case MERGE:
                         responseData = em.merge(entity);

@@ -24,7 +24,6 @@ public class SimpleEntity {
     @Column(name = "BIG_DECIMAL_FIELD", precision = 7, scale = 2)
     private BigDecimal bigDecimalField;
     private BigInteger bigIntegerField;
-    private Date dateField;
 
     public Integer getIntField() {
         return intField;
@@ -74,13 +73,7 @@ public class SimpleEntity {
         this.bigIntegerField = bigIntegerField;
     }
 
-    public Date getDateField() {
-        return dateField;
-    }
 
-    public void setDateField(Date dateField) {
-        this.dateField = dateField;
-    }
 
     @Override
     public String toString() {
@@ -91,7 +84,6 @@ public class SimpleEntity {
                 ", longField=" + longField +
                 ", bigDecimalField=" + bigDecimalField +
                 ", bigIntegerField=" + bigIntegerField +
-                ", dateField=" + dateField +
                 '}';
     }
 }

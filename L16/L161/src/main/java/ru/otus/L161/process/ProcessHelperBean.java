@@ -16,6 +16,7 @@ public class ProcessHelperBean {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessHelperBean.class);
     private static final String MESSAGE_SERVER_START_COMMAND = "java -jar ";
     private static final String MESSAGE_SERVER_NAME = "Message Server";
+    private static final String DAO_SERVICE_NAME = "Message Server";
     private static final String PROPERTY_NAME = "catalina.home";
     private static final String MSG_JAR_NAME = "MessageService.jar";
     private static final String DAO_JAR_NAME = "DaoService.jar";
@@ -44,7 +45,7 @@ public class ProcessHelperBean {
             LOG.info("Starting dao service process.");
             daoServiceProcess = new ProcessRunnerImpl();
             String command =  MESSAGE_SERVER_START_COMMAND + getDaoCommand() + " " + serverPort;
-            daoServiceProcess.start(command, MESSAGE_SERVER_NAME);
+            daoServiceProcess.start(command, DAO_SERVICE_NAME);
             LOG.info("Dao service started");
         } catch (IOException e) {
             LOG.error("Cannot start message server process. ", e);
