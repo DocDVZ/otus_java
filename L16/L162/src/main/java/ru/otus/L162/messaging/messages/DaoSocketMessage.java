@@ -16,6 +16,8 @@ public class DaoSocketMessage extends SocketMessage {
 
     public DaoSocketMessage(Addressee from, Addressee to){
         setClassName(this.getClass().getName());
+        setFrom(from);
+        setTo(to);
     }
 
     public SimpleEntity getRequestData() {

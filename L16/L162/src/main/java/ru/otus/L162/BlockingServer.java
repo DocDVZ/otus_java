@@ -2,12 +2,14 @@ package ru.otus.L162;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.L162.channel.MessageChannel;
 import ru.otus.L162.channel.SocketDaoMessageChannel;
 import ru.otus.L162.messaging.Addressee;
 import ru.otus.L162.messaging.messages.SocketMessage;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -53,25 +55,29 @@ public class BlockingServer {
 
     @SuppressWarnings("InfiniteLoopStatement")
     private void process() {
+        List<MessageChannel> removingList = new ArrayList<>();
         while (true) {
+            try {
                 for (ru.otus.L162.channel.MessageChannel channel : undefinedChannels) {
                     SocketMessage msg = channel.poll(); //get
                     if (msg != null) {
                         Addressee from = msg.getFrom();
                         Addressee to = msg.getTo();
-                        if (to == null){
+                        if (from == null){
                             logger.warn("Message from unknown channel, dropping message: " + msg);
                             continue;
                         }
-                        undefinedChannels.remove(channel);
+                        removingList.add(channel);
                         channels.put(from, channel);
-                        logger.info("Registered new addressed channel: " + to.getName());
+                        logger.info("Registered new addressed channel: " + from.getName());
                         if (to != null) {
                             sendMessage(msg);
                         }
                         checkUnreadedMessages(from);
                     }
                 }
+                removingList.forEach(p -> undefinedChannels.remove(p));
+                removingList.clear();
                 for (ru.otus.L162.channel.MessageChannel channel : channels.values()) {
                     SocketMessage msg = channel.poll(); //get
                     if (msg != null) {
@@ -81,10 +87,10 @@ public class BlockingServer {
                         }
                     }
                 }
-            try {
+
                 Thread.sleep(CHANNEL_READING_DELAY);
-            } catch (InterruptedException e) {
-                logger.error(e.toString());
+            } catch (Exception e) {
+                logger.error("Cannot process message", e);
             }
         }
     }

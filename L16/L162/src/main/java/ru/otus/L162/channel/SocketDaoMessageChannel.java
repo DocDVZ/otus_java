@@ -41,6 +41,7 @@ public class SocketDaoMessageChannel implements MessageChannel<DaoSocketMessage>
 
     public SocketDaoMessageChannel(String host, int port) throws IOException {
         this(new Socket(host, port));
+        init();
     }
 
     public void init() {
@@ -53,6 +54,7 @@ public class SocketDaoMessageChannel implements MessageChannel<DaoSocketMessage>
             while (socket.isConnected()) {
                 SocketMessage msg = output.take(); //blocks
                 String json = new Gson().toJson(msg);
+                LOG.debug("Sending message: " + json);
                 out.println(json);
                 out.println(); //end of message
             }
@@ -66,12 +68,11 @@ public class SocketDaoMessageChannel implements MessageChannel<DaoSocketMessage>
             String inputLine;
             StringBuilder stringBuilder = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
-                //System.out.println("Message received: " + inputLine);
+                LOG.debug("Message received: " + inputLine);
                 stringBuilder.append(inputLine);
                 if (inputLine.isEmpty() && !stringBuilder.toString().isEmpty()) {
                     String json = stringBuilder.toString();
                     DaoSocketMessage msg = getMsgFromJSON(json);
-                    LOG.debug("Received message: " + msg);
                     input.add(msg);
                     stringBuilder = new StringBuilder();
                 }

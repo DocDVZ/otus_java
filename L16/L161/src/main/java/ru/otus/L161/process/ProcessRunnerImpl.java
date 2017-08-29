@@ -15,6 +15,7 @@ public class ProcessRunnerImpl implements ProcessRunner{
 
     private Process process;
     private String id;
+    private volatile boolean isStarted = false;
 
 
     public void start(String command, String processID) throws IOException {
@@ -58,10 +59,18 @@ public class ProcessRunnerImpl implements ProcessRunner{
                 String line;
                 while ((line = br.readLine()) != null) {
                     LOG.debug(String.format("Process %s - %s - %s", id, type, line));
+                    if (line.contains("Server started")){
+                        isStarted = true;
+                    }
                 }
             } catch (IOException e) {
                 LOG.error(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public boolean isStarted(){
+        return isStarted;
     }
 }

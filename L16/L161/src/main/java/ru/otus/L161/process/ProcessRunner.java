@@ -10,4 +10,5 @@ public interface ProcessRunner {
 
     void stop();
 
+    boolean isStarted();
 }

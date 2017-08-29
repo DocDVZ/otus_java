@@ -66,15 +66,14 @@ public class AjaxController {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         DaoSocketMessage request = new DaoSocketMessage(MessagingContext.MY_ADDRESS, MessagingContext.DAO_ADDRESS);
-        SimpleEntity requestData = new SimpleEntity();
         request.setRequestData(entity);
         request.setOperation(CrudOperation.CREATE);
         String correlationID = messageHandler.send(request);
         DaoSocketMessage response = null;
         try {
             response = messageHandler.getResponse(correlationID);
-        } catch (TimeoutException e) {
-            LOG.error("Cannot create entity, timedout waiting");
+        } catch (Exception e) {
+            LOG.error("Cannot create entity", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (response.getSuccess()){
